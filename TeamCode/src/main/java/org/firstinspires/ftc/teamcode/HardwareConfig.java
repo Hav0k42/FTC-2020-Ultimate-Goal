@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -57,6 +58,8 @@ public class HardwareConfig
     public DcMotor  rightFrontDrive  = null; //Expansion Hub: Port 1
     public DcMotor  leftBackDrive   = null; //Control Hub: Port 1
     public DcMotor  rightBackDrive  = null; //Expansion Hub: Port 0
+
+    public DcMotor discLauncher = null; //Expansion Hub: Port 2
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
 //    public Servo    rightClaw   = null;
@@ -84,17 +87,20 @@ public class HardwareConfig
         rightFrontDrive = hwMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive  = hwMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hwMap.get(DcMotor.class, "rightBackDrive");
+        discLauncher = hwMap.get(DcMotor.class, "DiscLauncher");
 //        leftArm    = hwMap.get(DcMotor.class, "left_arm");
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        discLauncher.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
+        discLauncher.setPower(0);
 //        leftArm.setPower(0);
 
         // Set all motors to run without encoders.
@@ -103,6 +109,7 @@ public class HardwareConfig
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        discLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.

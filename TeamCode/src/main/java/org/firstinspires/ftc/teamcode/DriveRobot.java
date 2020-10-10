@@ -101,6 +101,7 @@ public class DriveRobot extends OpMode
         double rightFrontPower = 0;
         double leftBackPower = 0;
         double rightBackPower = 0;
+        double discLauncherPower = 0;
 
         double drive      = gamepad1.left_stick_y;
         double turn       = -gamepad1.left_stick_x;
@@ -160,16 +161,22 @@ public class DriveRobot extends OpMode
             driveSpeedFlag = 0;
         }
 
+        if (gamepad1.a) {
+            discLauncherPower = 1;
+        }
+
         robot.leftFrontDrive.setPower(leftFrontPower * driveSpeed);
         robot.rightFrontDrive.setPower(rightFrontPower * driveSpeed);
         robot.leftBackDrive.setPower(leftBackPower * driveSpeed);
         robot.rightBackDrive.setPower(rightBackPower * driveSpeed);
+        robot.discLauncher.setPower(discLauncherPower);
 
         telemetry.addData("Left Front Power", leftFrontPower * driveSpeed);
         telemetry.addData("Right Front Power", rightFrontPower * driveSpeed);
         telemetry.addData("Left Back Power", leftBackPower * driveSpeed);
         telemetry.addData("Right Back Power", rightBackPower * driveSpeed);
         telemetry.addData("Drive Speed", driveSpeed);
+        telemetry.addData("Disc Launcher Speed", discLauncherPower);
 
 
     }
