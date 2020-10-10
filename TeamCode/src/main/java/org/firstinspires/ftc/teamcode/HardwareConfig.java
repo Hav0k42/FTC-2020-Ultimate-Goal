@@ -87,7 +87,7 @@ public class HardwareConfig
         rightFrontDrive = hwMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive  = hwMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hwMap.get(DcMotor.class, "rightBackDrive");
-        discLauncher = hwMap.get(DcMotor.class, "DiscLauncher");
+        discLauncher = hwMap.get(DcMotor.class, "discLauncher");
 //        leftArm    = hwMap.get(DcMotor.class, "left_arm");
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
