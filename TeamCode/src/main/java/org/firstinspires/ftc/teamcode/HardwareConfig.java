@@ -53,10 +53,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class HardwareConfig
 {
     /* Public OpMode members. */
-    public DcMotor  leftFrontDrive   = null;
-    public DcMotor  rightFrontDrive  = null;
-    public DcMotor  leftBackDrive   = null;
-    public DcMotor  rightBackDrive  = null;
+    public DcMotor  leftFrontDrive   = null; //Control Hub: Port 0
+    public DcMotor  rightFrontDrive  = null; //Expansion Hub: Port 1
+    public DcMotor  leftBackDrive   = null; //Control Hub: Port 1
+    public DcMotor  rightBackDrive  = null; //Expansion Hub: Port 0
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
 //    public Servo    rightClaw   = null;
