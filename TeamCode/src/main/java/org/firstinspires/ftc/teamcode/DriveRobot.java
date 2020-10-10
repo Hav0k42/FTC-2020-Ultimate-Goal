@@ -169,6 +169,7 @@ public class DriveRobot extends OpMode
         telemetry.addData("Right Front Power", rightFrontPower * driveSpeed);
         telemetry.addData("Left Back Power", leftBackPower * driveSpeed);
         telemetry.addData("Right Back Power", rightBackPower * driveSpeed);
+        telemetry.addData("Drive Speed", driveSpeed);
 
 
     }
