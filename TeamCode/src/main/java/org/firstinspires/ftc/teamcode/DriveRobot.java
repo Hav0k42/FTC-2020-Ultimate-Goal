@@ -108,9 +108,9 @@ public class DriveRobot extends OpMode
 
 
         leftFrontPower         = Range.clip(drive + turn, -1.0, 1.0);
-        rightFrontPower        = Range.clip(drive - turn, -1.0, 1.0);
+        rightFrontPower        = Range.clip(drive + turn, -1.0, 1.0);
         leftBackPower         = Range.clip(drive + turn, -1.0, 1.0);
-        rightBackPower        = Range.clip(drive - turn, -1.0, 1.0);
+        rightBackPower        = Range.clip(drive + turn, -1.0, 1.0);
 
 
 
@@ -120,7 +120,8 @@ public class DriveRobot extends OpMode
             leftFrontPower = 1;
             rightFrontPower = -1;
             leftBackPower = -1;
-            rightBackPower = 1;
+            rightBackPower = 1; //strafe
+
 
             if (driveSpeed == 0.25) {
                 leftFrontPower = 2;
@@ -129,7 +130,6 @@ public class DriveRobot extends OpMode
                 rightBackPower = 2;
             }
         }
-
 
 
         if (gamepad1.dpad_right && gamepad1.left_stick_y == 0 && gamepad1.left_stick_x == 0) {
