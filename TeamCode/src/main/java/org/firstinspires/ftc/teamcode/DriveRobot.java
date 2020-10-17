@@ -102,14 +102,11 @@ public class DriveRobot extends OpMode {
         double rightBackPower = 0;
         double discLauncherPower = 0;
 
-        double drive = gamepad1.left_stick_y;
-        double turn = -gamepad1.left_stick_x;
 
-
-        leftFrontPower = -gamepad1.left_stick_x;
-        rightFrontPower = gamepad1.left_stick_y;
-        leftBackPower = -gamepad1.left_stick_x;
-        rightBackPower = gamepad1.left_stick_y;
+        leftFrontPower = Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x, -1.0, 1.0);
+        rightFrontPower = Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x, -1.0, 1.0);
+        leftBackPower = Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x, -1.0, 1.0);
+        rightBackPower = Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x, -1.0, 1.0);
 
 
         if(gamepad1.right_bumper && driveSpeedFlag ==0) {
