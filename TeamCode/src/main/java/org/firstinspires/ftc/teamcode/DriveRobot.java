@@ -51,8 +51,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="Drive Robot", group="Iterative Opmode")
-public class DriveRobot extends OpMode
-{
+public class DriveRobot extends OpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     HardwareConfig robot = new HardwareConfig();
@@ -103,77 +102,80 @@ public class DriveRobot extends OpMode
         double rightBackPower = 0;
         double discLauncherPower = 0;
 
-        double drive      = gamepad1.left_stick_y;
-        double turn       = -gamepad1.left_stick_x;
+        double drive = gamepad1.left_stick_y;
+        double turn = -gamepad1.left_stick_x;
 
 
-        leftFrontPower         = Range.clip(drive + turn, -1.0, 1.0);
-        rightFrontPower        = Range.clip(drive - turn, -1.0, 1.0);
-        leftBackPower         = Range.clip(drive + turn, -1.0, 1.0);
-        rightBackPower        = Range.clip(drive - turn, -1.0, 1.0);
+        leftFrontPower = Range.clip(drive + turn, -1.0, 1.0);
+        rightFrontPower = Range.clip(drive - turn, -1.0, 1.0);
+        leftBackPower = Range.clip(drive + turn, -1.0, 1.0);
+        rightBackPower = Range.clip(drive - turn, -1.0, 1.0);
 
 
-        if (gamepad1.left_stick_y ) {
-            leftFrontPower = 1;
-            rightFrontPower = -1;
-            leftBackPower = -1;
-            rightBackPower = 1; //strafe
+        leftFrontPower = gamepad1.left_stick_y;
+        rightFrontPower = -gamepad1.left_stick_y;
+        leftBackPower = -gamepad1.left_stick_y;
+        rightBackPower = gamepad1.left_stick_y; //strafe
 
 
-            if (driveSpeed == 0.25) {
-                leftFrontPower = 2;
-                rightFrontPower = -2;
-                leftBackPower = -2;
-                rightBackPower = 2;
-            }
+        if (driveSpeed == 0.25) {
+            leftFrontPower = 2;
+            rightFrontPower = -2;
+            leftBackPower = -2;
+            rightBackPower = 2;
         }
 
 
-        if (gamepad1.left_stick_x) {
-            leftFrontPower  = -1;
-            rightFrontPower = 1;
-            leftBackPower   = 1;
-            rightBackPower  = -1;
+        leftFrontPower = -gamepad1.right_stick_x;
+        rightFrontPower = gamepad1.right_stick_x;
+        leftBackPower = gamepad1.right_stick_x;
+        rightBackPower = -gamepad1.right_stick_x;
 
-            if (driveSpeed == 0.25) {
-                leftFrontPower = -2;
-                rightFrontPower = 2;
-                leftBackPower = 2;
-                rightBackPower = -2;
-            }
-        }
-
-        if (gamepad1.right_bumper && driveSpeedFlag == 0) {
-            if (driveSpeed == 1) {
-                driveSpeed = 0.25;
-            } else if (driveSpeed == 0.25) {
-                driveSpeed = 1;
-            }
-
-            driveSpeedFlag = 1;
+        if (driveSpeed == 0.25) {
+            leftFrontPower = -2;
+            rightFrontPower = 2;
+            leftBackPower = 2;
+            rightBackPower = -2;
         }
 
 
-        if (!gamepad1.left_bumper && !gamepad1.right_bumper) {
-            driveSpeedFlag = 0;
+        if(gamepad1.right_bumper &&driveSpeedFlag ==0)
+
+    {
+        if (driveSpeed == 1) {
+            driveSpeed = 0.25;
+        } else if (driveSpeed == 0.25) {
+            driveSpeed = 1;
         }
 
-        if (gamepad1.a) {
-            discLauncherPower = 1;
-        }
+        driveSpeedFlag = 1;
+    }
 
-        robot.leftFrontDrive.setPower(leftFrontPower * driveSpeed);
-        robot.rightFrontDrive.setPower(rightFrontPower * driveSpeed);
-        robot.leftBackDrive.setPower(leftBackPower * driveSpeed);
-        robot.rightBackDrive.setPower(rightBackPower * driveSpeed);
+
+        if(!gamepad1.left_bumper &&!gamepad1.right_bumper)
+
+    {
+        driveSpeedFlag = 0;
+    }
+
+        if(gamepad1.a)
+
+    {
+        discLauncherPower = 1;
+    }
+
+        robot.leftFrontDrive.setPower(leftFrontPower *driveSpeed);
+        robot.rightFrontDrive.setPower(rightFrontPower *driveSpeed);
+        robot.leftBackDrive.setPower(leftBackPower *driveSpeed);
+        robot.rightBackDrive.setPower(rightBackPower *driveSpeed);
         robot.discLauncher.setPower(discLauncherPower);
 
-        telemetry.addData("Left Front Power", leftFrontPower * driveSpeed);
-        telemetry.addData("Right Front Power", rightFrontPower * driveSpeed);
-        telemetry.addData("Left Back Power", leftBackPower * driveSpeed);
-        telemetry.addData("Right Back Power", rightBackPower * driveSpeed);
-        telemetry.addData("Drive Speed", driveSpeed);
-        telemetry.addData("Disc Launcher Speed", discLauncherPower);
+        telemetry.addData("Left Front Power",leftFrontPower *driveSpeed);
+        telemetry.addData("Right Front Power",rightFrontPower *driveSpeed);
+        telemetry.addData("Left Back Power",leftBackPower *driveSpeed);
+        telemetry.addData("Right Back Power",rightBackPower *driveSpeed);
+        telemetry.addData("Drive Speed",driveSpeed);
+        telemetry.addData("Disc Launcher Speed",discLauncherPower);
 
 
     }
