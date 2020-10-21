@@ -112,8 +112,11 @@ public class DriveRobot extends OpMode {
 
         if(gamepad1.right_trigger > 0) {
             driveSpeed = 1 - gamepad1.right_trigger;
-
+            if(driveSpeed < 0.3) {
+                driveSpeed = 0.3;
+            }
         }
+            
 
         if(gamepad1.a) {
             discLauncherPower = 1;
