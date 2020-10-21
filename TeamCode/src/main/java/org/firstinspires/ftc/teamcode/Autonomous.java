@@ -113,6 +113,8 @@ public class Autonomous extends LinearOpMode {
 
         /** Wait for the game to begin */
         robot.init(hardwareMap);
+        WebcamName cam = robot.camera;
+
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
         waitForStart();
