@@ -112,7 +112,7 @@ public class DriveRobot extends OpMode {
 
         if(gamepad1.right_trigger > 0) {
             driveSpeed = 1 - gamepad1.right_trigger;
-            
+
         }
 
         if(gamepad1.a) {
