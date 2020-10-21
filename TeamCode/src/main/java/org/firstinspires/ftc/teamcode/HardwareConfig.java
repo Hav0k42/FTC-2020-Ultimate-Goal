@@ -34,6 +34,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 /**
  * This is NOT an opmode.
@@ -60,6 +62,9 @@ public class HardwareConfig
     public DcMotor  rightBackDrive  = null; //Expansion Hub: Port 0
 
     public DcMotor discLauncher = null; //Expansion Hub: Port 2
+
+    public WebcamName camera = null; // Control Hub
+    BNO055IMU imu;
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
 //    public Servo    rightClaw   = null;
@@ -88,6 +93,9 @@ public class HardwareConfig
         leftBackDrive  = hwMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hwMap.get(DcMotor.class, "rightBackDrive");
         discLauncher = hwMap.get(DcMotor.class, "discLauncher");
+
+        camera = hwMap.get(WebcamName.class, "cam");
+
 //        leftArm    = hwMap.get(DcMotor.class, "left_arm");
         leftFrontDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
