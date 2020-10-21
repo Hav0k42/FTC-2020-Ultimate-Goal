@@ -96,6 +96,7 @@ public class DriveRobot extends OpMode {
     @Override
     public void loop() {
         // Setup a variable for each drive wheel to save power level for telemetry
+
         double leftFrontPower = 0;
         double rightFrontPower = 0;
         double leftBackPower = 0;
@@ -109,19 +110,9 @@ public class DriveRobot extends OpMode {
         rightBackPower = Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
 
 
-        if(gamepad1.right_bumper && driveSpeedFlag ==0) {
-            if (driveSpeed == 1) {
-                driveSpeed = 0.25;
-            } else if (driveSpeed == 0.25) {
-                driveSpeed = 1;
-            }
-
-                driveSpeedFlag = 1;
-            }
-
-
-        if(!gamepad1.left_bumper && !gamepad1.right_bumper) {
-            driveSpeedFlag = 0;
+        if(gamepad1.right_trigger > 0) {
+            driveSpeed = 1 - gamepad1.right_trigger;
+            
         }
 
         if(gamepad1.a) {
