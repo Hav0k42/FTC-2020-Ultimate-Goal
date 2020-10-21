@@ -101,7 +101,7 @@ public class HardwareConfig
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        discLauncher.setDirection(DcMotor.Direction.FORWARD);
+        discLauncher.setDirection(DcMotor.Direction.REVERSE);
 
         // Set all motors to zero power
         leftFrontDrive.setPower(0);
