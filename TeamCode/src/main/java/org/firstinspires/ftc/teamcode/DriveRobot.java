@@ -55,6 +55,8 @@ public class DriveRobot extends OpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     HardwareConfig robot = new HardwareConfig();
+    double initialDiscVelocity = 20.0; //speed of the disc cannon in meters per second.
+    double cannonRadius = 0.2; //radius of the cannon in meters.
     double driveSpeed = 1.0;
     int driveSpeedFlag = 0;
 
@@ -143,6 +145,87 @@ public class DriveRobot extends OpMode {
      */
     @Override
     public void stop() {
+    }
+
+
+
+    public double calculateAngle(double horizontalDistance, double initVelocity) {//Calculate the angle the cannon should be using sensors. Make sure calculations are in m/s
+        double verticalDistance = 0.90963725;
+        double pi = 3.141592653589793238462643383;
+
+        double a = 1;
+        double b = -((initVelocity * initVelocity) / (4.905 * horizontalDistance));
+        double c = -(((verticalDistance / horizontalDistance) + ((4.905 * horizontalDistance * horizontalDistance) / (initVelocity * initVelocity))) / ((-4.905 * horizontalDistance) / (initVelocity * initVelocity)));
+
+
+        double anglePlus = Math.atan(Math.sqrt((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a)));
+        double angleMinus = Math.atan(Math.sqrt((-b - Math.sqrt((b * b) - (4 * a * c))) / (2 * a)));
+
+        //Math.atan uses radians. Angle will be returned in radians.
+
+        boolean plusWorks = false;
+        boolean minusWorks = false;
+
+        if (anglePlus > 0 && anglePlus < (pi / 2)) {
+            plusWorks = true;
+        }
+
+        if (angleMinus > 0 && angleMinus < (pi / 2)) {
+            minusWorks = true;
+        }
+
+        if (plusWorks && minusWorks) {
+            return (Math.min(anglePlus, angleMinus));
+        } else if (plusWorks) {
+            return anglePlus;
+        } else {
+            return angleMinus;
+        }
+
+    }
+
+
+
+    public double distillAngle(double horizontalDistance, double initVelocity, double radius, double previousAngle, int passes) {
+        while (passes != 0) {
+            double verticalDistance = 0.90963725;
+            double pi = 3.141592653589793238462643383;
+
+            double a = ((-4.905 * (horizontalDistance - (radius * Math.cos(previousAngle))) * (horizontalDistance - (radius * Math.cos(previousAngle)))) / (initVelocity * initVelocity));
+            double b = (horizontalDistance - (radius * Math.cos(previousAngle)));
+            double c = -(verticalDistance - (radius * Math.sin(previousAngle)) + ((4.905 * (horizontalDistance - (radius * Math.cos(previousAngle))) * (horizontalDistance - (radius * Math.cos(previousAngle)))) / (initVelocity * initVelocity)));
+
+            double anglePlus = Math.atan(Math.sqrt((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a)));
+            double angleMinus = Math.atan(Math.sqrt((-b - Math.sqrt((b * b) - (4 * a * c))) / (2 * a)));
+
+
+
+            boolean plusWorks = false;
+            boolean minusWorks = false;
+
+            if (anglePlus > 0 && anglePlus < (pi / 2)) {
+                plusWorks = true;
+            }
+
+            if (angleMinus > 0 && angleMinus < (pi / 2)) {
+                minusWorks = true;
+            }
+
+            if (plusWorks && minusWorks) {
+                previousAngle = (Math.min(anglePlus, angleMinus));
+            } else if (plusWorks) {
+                previousAngle = anglePlus;
+            } else {
+                previousAngle = angleMinus;
+            }
+            passes--;
+        }
+        return previousAngle;
+    }
+
+    public double angleCalc(double horizontalDistance, double initVelocity, double radius, int passes) {
+        double firstAngle = calculateAngle(horizontalDistance, initVelocity);
+        return distillAngle(horizontalDistance, initVelocity, radius, firstAngle, passes);
     }
 
 }
