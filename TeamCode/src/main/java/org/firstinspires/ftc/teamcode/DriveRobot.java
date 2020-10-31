@@ -212,7 +212,7 @@ public class DriveRobot extends OpMode {
             }
 
             if (previousAngle == anglePlus || previousAngle == angleMinus) {
-                passes = 0;
+                passes = 1;
             } else {//Angle isn't yet refined enough
                 if (plusWorks && minusWorks) {
                     previousAngle = (Math.min(anglePlus, angleMinus));
