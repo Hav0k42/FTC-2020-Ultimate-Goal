@@ -160,8 +160,8 @@ public class DriveRobot extends OpMode {
         double c = -(((verticalDistance / horizontalDistance) + ((4.905 * horizontalDistance) / (initVelocity * initVelocity))) / ((-4.905 * horizontalDistance) / (initVelocity * initVelocity)));
 
 
-        double anglePlus = Math.atan(Math.sqrt((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a)));
-        double angleMinus = Math.atan(Math.sqrt((-b - Math.sqrt((b * b) - (4 * a * c))) / (2 * a)));
+        double anglePlus = Math.atan((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a));
+        double angleMinus = Math.atan((-b - Math.sqrt((b * b) - (4 * a * c))) / (2 * a));
 
         //Math.atan uses radians. Angle will be returned in radians.
 
@@ -195,8 +195,8 @@ public class DriveRobot extends OpMode {
             double b = (horizontalDistance - (radius * Math.cos(previousAngle)));
             double c = -(verticalDistance - (radius * Math.sin(previousAngle)) + ((4.905 * (horizontalDistance - (radius * Math.cos(previousAngle))) * (horizontalDistance - (radius * Math.cos(previousAngle)))) / (initVelocity * initVelocity)));
 
-            double anglePlus = Math.atan(Math.sqrt((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a)));
-            double angleMinus = Math.atan(Math.sqrt((-b - Math.sqrt((b * b) - (4 * a * c))) / (2 * a)));
+            double anglePlus = Math.atan((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a));
+            double angleMinus = Math.atan((-b - Math.sqrt((b * b) - (4 * a * c))) / (2 * a));
 
 
 
