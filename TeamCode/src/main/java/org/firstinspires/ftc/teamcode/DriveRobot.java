@@ -106,6 +106,7 @@ public class DriveRobot extends OpMode {
         double discLauncherPower = 0;
 
 
+
         leftFrontPower = Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
         rightFrontPower = Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
         leftBackPower = Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
@@ -145,6 +146,7 @@ public class DriveRobot extends OpMode {
      */
     @Override
     public void stop() {
+
     }
 
 
@@ -184,8 +186,6 @@ public class DriveRobot extends OpMode {
 
     }
 
-
-
     public double distillAngle(double horizontalDistance, double initVelocity, double radius, double previousAngle, int passes) {
         while (passes != 0) {
             double verticalDistance = 0.90963725;
@@ -211,12 +211,16 @@ public class DriveRobot extends OpMode {
                 minusWorks = true;
             }
 
-            if (plusWorks && minusWorks) {
-                previousAngle = (Math.min(anglePlus, angleMinus));
-            } else if (plusWorks) {
-                previousAngle = anglePlus;
-            } else {
-                previousAngle = angleMinus;
+            if (previousAngle == anglePlus || previousAngle == angleMinus) {
+                passes = 0;
+            } else {//Angle isn't yet refined enough
+                if (plusWorks && minusWorks) {
+                    previousAngle = (Math.min(anglePlus, angleMinus));
+                } else if (plusWorks) {
+                    previousAngle = anglePlus;
+                } else {
+                    previousAngle = angleMinus;
+                }
             }
             passes--;
         }
