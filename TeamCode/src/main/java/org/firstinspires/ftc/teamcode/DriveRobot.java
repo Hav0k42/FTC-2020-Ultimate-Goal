@@ -157,7 +157,7 @@ public class DriveRobot extends OpMode {
 
         double a = 1;
         double b = -((initVelocity * initVelocity) / (4.905 * horizontalDistance));
-        double c = -(((verticalDistance / horizontalDistance) + ((4.905 * horizontalDistance * horizontalDistance) / (initVelocity * initVelocity))) / ((-4.905 * horizontalDistance) / (initVelocity * initVelocity)));
+        double c = -(((verticalDistance / horizontalDistance) + ((4.905 * horizontalDistance) / (initVelocity * initVelocity))) / ((-4.905 * horizontalDistance) / (initVelocity * initVelocity)));
 
 
         double anglePlus = Math.atan(Math.sqrt((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a)));
