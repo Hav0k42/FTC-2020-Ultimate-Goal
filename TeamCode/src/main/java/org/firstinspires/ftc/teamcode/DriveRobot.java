@@ -151,13 +151,14 @@ public class DriveRobot extends OpMode {
 
 
 
-    public double calculateAngle(double horizontalDistance, double initVelocity) {//Calculate the angle the cannon should be using sensors. Make sure calculations are in m/s
+    public static double calculateAngle(double horizontalDistance, double initVelocity) {//Calculate the angle the cannon should be using sensors. Make sure calculations are in m/s
         double verticalDistance = 0.90963725;
         double pi = 3.141592653589793238462643383;
 
         double a = 1;
         double b = -((initVelocity * initVelocity) / (4.905 * horizontalDistance));
         double c = -(((verticalDistance / horizontalDistance) + ((4.905 * horizontalDistance) / (initVelocity * initVelocity))) / ((-4.905 * horizontalDistance) / (initVelocity * initVelocity)));
+
 
 
         double anglePlus = Math.atan((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a));
@@ -186,7 +187,7 @@ public class DriveRobot extends OpMode {
 
     }
 
-    public double distillAngle(double horizontalDistance, double initVelocity, double radius, double previousAngle, int passes) {
+    public static double distillAngle(double horizontalDistance, double initVelocity, double radius, double previousAngle, int passes) {
         while (passes != 0) {
             double verticalDistance = 0.90963725;
             double pi = 3.141592653589793238462643383;
@@ -210,7 +211,6 @@ public class DriveRobot extends OpMode {
             if (angleMinus > 0 && angleMinus < (pi / 2)) {
                 minusWorks = true;
             }
-
             if (previousAngle == anglePlus || previousAngle == angleMinus) {
                 passes = 1;
             } else {//Angle isn't yet refined enough
@@ -227,7 +227,7 @@ public class DriveRobot extends OpMode {
         return previousAngle;
     }
 
-    public double angleCalc(double horizontalDistance, double initVelocity, double radius, int passes) {
+    public static double angleCalc(double horizontalDistance, double initVelocity, double radius, int passes) {
         double firstAngle = calculateAngle(horizontalDistance, initVelocity);
         return distillAngle(horizontalDistance, initVelocity, radius, firstAngle, passes);
     }
