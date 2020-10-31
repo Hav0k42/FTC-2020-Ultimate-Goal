@@ -96,6 +96,7 @@ public class CameraRingExample extends LinearOpMode
         static final Scalar BLUE = new Scalar(0, 0, 255);
         static final Scalar GREEN = new Scalar(0, 255, 0);
 
+
         /*
          * The core values which define the location and size of the sample regions
          */
@@ -166,12 +167,14 @@ public class CameraRingExample extends LinearOpMode
                 position = RingPosition.NONE;
             }
 
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region1_pointA, // First point which defines the rectangle
-                    region1_pointB, // Second point which defines the rectangle
-                    GREEN, // The color the rectangle is drawn in
-                    -1); // Negative thickness means solid fill
+//            Imgproc.rectangle(
+//                    input, // Buffer to draw on
+//                    region1_pointA, // First point which defines the rectangle
+//                    region1_pointB, // Second point which defines the rectangle
+//                    GREEN, // The color the rectangle is drawn in
+//                    -1); // Negative thickness means solid fill
+
+
 
             return input;
         }
