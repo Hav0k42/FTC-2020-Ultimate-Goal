@@ -58,7 +58,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 @Autonomous(name="Blue Left", group ="Autonomous")
 public class BlueAutonomousLeft extends LinearOpMode
 {
-    OpenCvInternalCamera phoneCam;
+    OpenCvCamera webCam;
     SkystoneDeterminationPipeline pipeline;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
     private static final boolean PHONE_IS_PORTRAIT = false  ;
@@ -92,9 +92,36 @@ public class BlueAutonomousLeft extends LinearOpMode
     public void runOpMode()
     {
 
-        webcamName = hardwareMap.get(WebcamName.class, "cam");
-
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
+        pipeline = new SkystoneDeterminationPipeline();
+        webCam.setPipeline(pipeline);
+
+        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
+        // out when the RC activity is in portrait. We do our actual image processing assuming
+        // landscape orientation, though.
+
+        webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+        });
+        String pos = pipeline.position.toString();
+        webCam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener()
+        {
+            @Override
+            public void onClose()
+            {
+                webCam.stopStreaming();
+            }
+
+        });
+
+        webcamName = hardwareMap.get(WebcamName.class, "cam");
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -221,23 +248,9 @@ public class BlueAutonomousLeft extends LinearOpMode
         // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
         // Tap the preview window to receive a fresh image.
 
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        pipeline = new SkystoneDeterminationPipeline();
-        phoneCam.setPipeline(pipeline);
 
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
-        phoneCam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
 
-        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                phoneCam.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
-            }
-        });
+
 
         targetsUltimateGoal.activate();
         waitForStart();

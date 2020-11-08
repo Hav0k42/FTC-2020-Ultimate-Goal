@@ -35,11 +35,12 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 @TeleOp(name="Camera Ring Testing", group ="Concept")
 public class CameraRingExample extends LinearOpMode
 {
-    OpenCvInternalCamera phoneCam;
+    OpenCvCamera webCam;
     SkystoneDeterminationPipeline pipeline;
 
     @Override
@@ -47,30 +48,32 @@ public class CameraRingExample extends LinearOpMode
     {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
         pipeline = new SkystoneDeterminationPipeline();
-        phoneCam.setPipeline(pipeline);
+        webCam.setPipeline(pipeline);
 
         // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
         // out when the RC activity is in portrait. We do our actual image processing assuming
         // landscape orientation, though.
-        phoneCam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
 
-        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
             {
-                phoneCam.startStreaming(320,240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
             }
         });
-
+        String pos = pipeline.position.toString();
+        telemetry.addData("Position", pipeline.position);
         waitForStart();
+
+
 
         while (opModeIsActive())
         {
             telemetry.addData("Analysis", pipeline.getAnalysis());
-            telemetry.addData("Position", pipeline.position);
+            telemetry.addData("Position", pos);
             telemetry.update();
 
             // Don't burn CPU cycles busy-looping in this sample
@@ -95,7 +98,6 @@ public class CameraRingExample extends LinearOpMode
          */
         static final Scalar BLUE = new Scalar(0, 0, 255);
         static final Scalar GREEN = new Scalar(0, 255, 0);
-
 
         /*
          * The core values which define the location and size of the sample regions
@@ -167,14 +169,12 @@ public class CameraRingExample extends LinearOpMode
                 position = RingPosition.NONE;
             }
 
-//            Imgproc.rectangle(
-//                    input, // Buffer to draw on
-//                    region1_pointA, // First point which defines the rectangle
-//                    region1_pointB, // Second point which defines the rectangle
-//                    GREEN, // The color the rectangle is drawn in
-//                    -1); // Negative thickness means solid fill
-
-
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region1_pointA, // First point which defines the rectangle
+                    region1_pointB, // Second point which defines the rectangle
+                    GREEN, // The color the rectangle is drawn in
+                    -1); // Negative thickness means solid fill
 
             return input;
         }
