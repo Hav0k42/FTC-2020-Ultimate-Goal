@@ -253,6 +253,8 @@ public class BlueAutonomousLeft extends LinearOpMode
 
 
         targetsUltimateGoal.activate();
+        telemetry.addData("Status", "Ready to start");
+        telemetry.update();
         waitForStart();
 
         while (opModeIsActive())
