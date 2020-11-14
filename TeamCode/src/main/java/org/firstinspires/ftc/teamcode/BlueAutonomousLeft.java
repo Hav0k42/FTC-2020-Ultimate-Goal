@@ -91,36 +91,41 @@ public class BlueAutonomousLeft extends LinearOpMode
     @Override
     public void runOpMode()
     {
+    
+        String pos = "";
+        int analysis = 0;
+        {
+            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
+            pipeline = new SkystoneDeterminationPipeline();
+            webCam.setPipeline(pipeline);
 
+            // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
+            // out when the RC activity is in portrait. We do our actual image processing assuming
+            // landscape orientation, though.
+
+            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+            {
+                @Override
+                public void onOpened()
+                {
+                    webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+                }
+
+            });
+            pos = pipeline.position.toString();
+            webCam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener()
+            {
+                @Override
+                public void onClose()
+                {
+                    webCam.stopStreaming();
+                }
+
+            });
+        }
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
-        pipeline = new SkystoneDeterminationPipeline();
-        webCam.setPipeline(pipeline);
-
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
-
-        webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
-            }
-
-        });
-        String pos = pipeline.position.toString();
-        webCam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener()
-        {
-            @Override
-            public void onClose()
-            {
-                webCam.stopStreaming();
-            }
-
-        });
-
+        
         webcamName = hardwareMap.get(WebcamName.class, "cam");
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -259,8 +264,8 @@ public class BlueAutonomousLeft extends LinearOpMode
 
         while (opModeIsActive())
         {
-            telemetry.addData("Analysis", pipeline.getAnalysis());
-            telemetry.addData("Position", pipeline.position);
+            telemetry.addData("Analysis", analysis);
+            telemetry.addData("Position", pos);
 
 
 
