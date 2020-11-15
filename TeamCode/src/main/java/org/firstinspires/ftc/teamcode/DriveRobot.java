@@ -103,8 +103,8 @@ public class DriveRobot extends OpMode {
         double rightFrontPower = 0;
         double leftBackPower = 0;
         double rightBackPower = 0;
-        double discLauncherPower = 0;
-
+        double leftDiscLauncherPower = 0;
+        double rightDiscLauncherPower = 0;
 
 
         leftFrontPower = -Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
@@ -122,21 +122,24 @@ public class DriveRobot extends OpMode {
             
 
         if(gamepad1.a) {
-            discLauncherPower = 1;
+            leftDiscLauncherPower = 1;
+            rightDiscLauncherPower = 1;
         }
 
         robot.leftFrontDrive.setPower(leftFrontPower * driveSpeed);
         robot.rightFrontDrive.setPower(rightFrontPower * driveSpeed);
         robot.leftBackDrive.setPower(leftBackPower * driveSpeed);
         robot.rightBackDrive.setPower(rightBackPower * driveSpeed);
-        robot.discLauncher.setPower(discLauncherPower);
+        robot.leftDiscLauncher.setPower(leftDiscLauncherPower);
+        robot.rightDiscLauncher.setPower(rightDiscLauncherPower);
 
         telemetry.addData("Left Front Power",leftFrontPower * driveSpeed);
         telemetry.addData("Right Front Power",rightFrontPower * driveSpeed);
         telemetry.addData("Left Back Power",leftBackPower * driveSpeed);
         telemetry.addData("Right Back Power",rightBackPower * driveSpeed);
         telemetry.addData("Drive Speed", driveSpeed);
-        telemetry.addData("Disc Launcher Speed", discLauncherPower);
+        telemetry.addData("Disc Launcher Speed", leftDiscLauncherPower);
+        telemetry.addData("Right Launcher Speed", rightDiscLauncherPower);
 
 
     }
