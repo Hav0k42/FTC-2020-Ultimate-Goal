@@ -122,8 +122,8 @@ public class DriveRobot extends OpMode {
             
 
         if(gamepad1.a) {
-            leftDiscLauncherPower = 1;
-            rightDiscLauncherPower = 1;
+            leftDiscLauncherPower = 0.25;
+            rightDiscLauncherPower = 0.25;
         }
 
         robot.leftFrontDrive.setPower(leftFrontPower * driveSpeed);
