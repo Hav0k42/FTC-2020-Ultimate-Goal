@@ -60,6 +60,9 @@ public class DriveRobot extends OpMode {
     double driveSpeed = 1.0;
     int driveSpeedFlag = 0;
 
+    boolean buttonY = false;
+    boolean buttonB = false;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -106,8 +109,6 @@ public class DriveRobot extends OpMode {
         double leftDiscLauncherPower = 0;
         double rightDiscLauncherPower = 0;
         double currentServoPos = 0 ;
-        boolean buttonY = false;
-        boolean buttonB = false;
 
         leftFrontPower = -Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
         rightFrontPower = -Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
@@ -130,19 +131,19 @@ public class DriveRobot extends OpMode {
 
         currentServoPos = robot.horizontalTurret.getPosition();
 
-        if(gamepad1.y && !buttonY && currentServoPos > 1) {
-            robot.horizontalTurret.setPosition(currentServoPos + 0.1);
+        if(gamepad1.y && !buttonY && currentServoPos < 1) {
+            robot.horizontalTurret.setPosition(currentServoPos + 0.05);
             buttonY = true;
         }
-        else {
+        else if (!gamepad1.y) {
             buttonY = false;
         }
 
-        if(gamepad1.b && !buttonB && currentServoPos < 0) {
-            robot.horizontalTurret.setPosition(currentServoPos - 0.1);
+        if(gamepad1.b && !buttonB && currentServoPos > 0) {
+            robot.horizontalTurret.setPosition(currentServoPos - 0.05);
             buttonB = true;
         }
-        else {
+        else if (!gamepad1.b) {
             buttonB = false;
         }
 
