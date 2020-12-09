@@ -105,7 +105,9 @@ public class DriveRobot extends OpMode {
         double rightBackPower = 0;
         double leftDiscLauncherPower = 0;
         double rightDiscLauncherPower = 0;
-
+        double currentServoPos = 0 ;
+        boolean buttonY = false;
+        boolean buttonB = false;
 
         leftFrontPower = -Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
         rightFrontPower = -Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
@@ -124,6 +126,24 @@ public class DriveRobot extends OpMode {
         if(gamepad1.a) {
             leftDiscLauncherPower = 0.5;
             rightDiscLauncherPower = 0.5;
+        }
+
+        currentServoPos = robot.horizontalTurret.getPosition();
+
+        if(gamepad1.y && !buttonY && currentServoPos > 1) {
+            robot.horizontalTurret.setPosition(currentServoPos + 0.1);
+            buttonY = true;
+        }
+        else {
+            buttonY = false;
+        }
+
+        if(gamepad1.b && !buttonB && currentServoPos < 0) {
+            robot.horizontalTurret.setPosition(currentServoPos - 0.1);
+            buttonB = true;
+        }
+        else {
+            buttonB = false;
         }
 
         robot.leftFrontDrive.setPower(leftFrontPower * driveSpeed);
