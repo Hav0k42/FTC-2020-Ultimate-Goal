@@ -347,6 +347,14 @@ public class BlueAutonomousLeft extends LinearOpMode
             telemetry.update();
 
 
+            
+            if (pos.equals("FOUR") {//Furthest Square *Target C
+            
+            } else if (pos.equals("ONE") {//Middle Square *Target B
+            
+            } else {//Closest Square *Target A
+            
+            }
             /*
             * Autonomous Steps:
             * 1: Scan the rings to see which position the wobble goal should go
