@@ -121,17 +121,14 @@ public class BlueAutonomousLeft extends LinearOpMode
             // out when the RC activity is in portrait. We do our actual image processing assuming
             // landscape orientation, though.
 
-            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-            {
-                @Override
-                public void onOpened()
-                {
-                    webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
-                }
-
-            });
+            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener());
+            
             pos = pipeline.position.toString();
         
+            webCam.openCameraDeviceAsync(OpenCvCamera.AsyncCameraOpenListener());
+            
+            
+        webcamName = hardwareMap.get(WebcamName.class, "cam");
         
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -142,7 +139,7 @@ public class BlueAutonomousLeft extends LinearOpMode
         /**
          * We also indicate which camera on the RC we wish to use.
          */
-        parameters.cameraName = (CameraName) webCam;
+        parameters.cameraName = webcamName;
 
         // Make sure extended tracking is disabled for this example.
         parameters.useExtendedTracking = false;
