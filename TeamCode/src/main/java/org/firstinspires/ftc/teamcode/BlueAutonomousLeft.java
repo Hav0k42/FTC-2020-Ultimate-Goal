@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -141,7 +142,7 @@ public class BlueAutonomousLeft extends LinearOpMode
         /**
          * We also indicate which camera on the RC we wish to use.
          */
-        parameters.cameraName = webCam;
+        parameters.cameraName = (CameraName) webCam;
 
         // Make sure extended tracking is disabled for this example.
         parameters.useExtendedTracking = false;
@@ -337,9 +338,9 @@ public class BlueAutonomousLeft extends LinearOpMode
 
 
             
-            if (pos.equals("FOUR") {//Furthest Square *Target C
+            if (pos.equals("FOUR")) {//Furthest Square *Target C
             
-            } else if (pos.equals("ONE") {//Middle Square *Target B
+            } else if (pos.equals("ONE")) {//Middle Square *Target B
             
             } else {//Closest Square *Target A
             
