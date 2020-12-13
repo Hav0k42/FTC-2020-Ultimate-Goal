@@ -131,7 +131,6 @@ public class BlueAutonomousLeft extends LinearOpMode
             });
             pos = pipeline.position.toString();
         
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -142,7 +141,7 @@ public class BlueAutonomousLeft extends LinearOpMode
         /**
          * We also indicate which camera on the RC we wish to use.
          */
-        parameters.cameraName = webcam;
+        parameters.cameraName = webCam;
 
         // Make sure extended tracking is disabled for this example.
         parameters.useExtendedTracking = false;
@@ -338,9 +337,9 @@ public class BlueAutonomousLeft extends LinearOpMode
 
 
             
-            if (pos.equals("FOUR")) {//Furthest Square *Target C
+            if (pos.equals("FOUR") {//Furthest Square *Target C
             
-            } else if (pos.equals("ONE")) {//Middle Square *Target B
+            } else if (pos.equals("ONE") {//Middle Square *Target B
             
             } else {//Closest Square *Target A
             
