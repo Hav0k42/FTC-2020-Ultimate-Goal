@@ -121,11 +121,21 @@ public class BlueAutonomousLeft extends LinearOpMode
             // out when the RC activity is in portrait. We do our actual image processing assuming
             // landscape orientation, though.
 
-            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener());
+            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener(
+                @Override
+                public void onOpened() {
+        
+                }
+            ));
             
             pos = pipeline.position.toString();
         
-            webCam.openCameraDeviceAsync(OpenCvCamera.AsyncCameraOpenListener());
+            webCam.openCameraDeviceAsync(OpenCvCamera.AsyncCameraOpenListener(
+                @Override
+                public void onClose() {
+        
+                }
+            ));
             
             
         webcamName = hardwareMap.get(WebcamName.class, "cam");
