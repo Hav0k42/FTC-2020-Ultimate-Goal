@@ -130,7 +130,7 @@ public class BlueAutonomousLeft extends LinearOpMode
             
             pos = pipeline.position.toString();
         
-            webCam.openCameraDeviceAsync(OpenCvCamera.AsyncCameraOpenListener(){
+            webCam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener(){
                 @Override
                 public void onClose() {
         
