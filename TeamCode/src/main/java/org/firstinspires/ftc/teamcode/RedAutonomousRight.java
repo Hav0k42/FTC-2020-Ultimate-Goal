@@ -60,7 +60,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-@Autonomous(name="Blue Left", group ="Autonomous")
+@Autonomous(name="Red Right", group ="Autonomous")
 public class RedAutonomousRight extends LinearOpMode
 {
 
