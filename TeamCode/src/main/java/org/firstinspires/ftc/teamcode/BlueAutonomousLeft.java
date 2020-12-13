@@ -110,7 +110,7 @@ public class BlueAutonomousLeft extends LinearOpMode
     
         String pos = "";
         int analysis = 0;
-        {
+        
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
             pipeline = new SkystoneDeterminationPipeline();
@@ -130,19 +130,9 @@ public class BlueAutonomousLeft extends LinearOpMode
 
             });
             pos = pipeline.position.toString();
-            webCam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener()
-            {
-                @Override
-                public void onClose()
-                {
-                    webCam.stopStreaming();
-                }
-
-            });
-        }
+        
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         
-        webcamName = hardwareMap.get(WebcamName.class, "cam");
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -152,7 +142,7 @@ public class BlueAutonomousLeft extends LinearOpMode
         /**
          * We also indicate which camera on the RC we wish to use.
          */
-        parameters.cameraName = webcamName;
+        parameters.cameraName = webcam;
 
         // Make sure extended tracking is disabled for this example.
         parameters.useExtendedTracking = false;
