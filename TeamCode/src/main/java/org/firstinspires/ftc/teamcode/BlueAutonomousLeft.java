@@ -348,9 +348,9 @@ public class BlueAutonomousLeft extends LinearOpMode
 
 
             
-            if (pos.equals("FOUR") {//Furthest Square *Target C
+            if (pos.equals("FOUR")) {//Furthest Square *Target C
             
-            } else if (pos.equals("ONE") {//Middle Square *Target B
+            } else if (pos.equals("ONE")) {//Middle Square *Target B
             
             } else {//Closest Square *Target A
             
