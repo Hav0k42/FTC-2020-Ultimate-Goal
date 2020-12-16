@@ -109,7 +109,7 @@ public class RedAutonomousRight extends LinearOpMode
     public void runOpMode()
     {
     
-        final String pos = "";
+        String pos = "";
         int analysis = 0;
         
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
