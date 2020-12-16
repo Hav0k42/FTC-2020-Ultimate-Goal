@@ -393,8 +393,8 @@ public class BlueAutonomousRight extends LinearOpMode
             newRightFrontTarget = robot.rightFrontDrive.getCurrentPosition() + (int)(rightFrontInches * COUNTS_PER_INCH);
             newRightBackTarget = robot.rightBackDrive.getCurrentPosition() + (int)(rightBackInches * COUNTS_PER_INCH);
             robot.leftFrontDrive.setTargetPosition(newLeftFrontTarget);
-            robot.leftFrontDrive.setTargetPosition(newLeftFrontTarget);
-            robot.rightBackDrive.setTargetPosition(newRightBackTarget);
+            robot.leftBackDrive.setTargetPosition(newLeftBackTarget);
+            robot.rightFrontDrive.setTargetPosition(newRightFrontTarget);
             robot.rightBackDrive.setTargetPosition(newRightBackTarget);
 
             // Turn On RUN_TO_POSITION
