@@ -109,7 +109,7 @@ public class RedAutonomousRight extends LinearOpMode
     public void runOpMode()
     {
     
-        String pos = "";
+        final String pos = "";
         int analysis = 0;
         
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -302,7 +302,9 @@ public class RedAutonomousRight extends LinearOpMode
         telemetry.update();
         
         waitForStart();
-
+        
+        
+        int autonomousStep = 0;
         while (opModeIsActive())
         {
             telemetry.addData("Analysis", analysis);
@@ -346,11 +348,20 @@ public class RedAutonomousRight extends LinearOpMode
 
             
             if (pos.equals("FOUR")) {//Furthest Square *Target C
-            
+                if (autonomousStep == 0) {
+                    encoderDrive(0.75, 45, 45, 45, 45, 10);
+                    autonomousStep = 1;
+                }
             } else if (pos.equals("ONE")) {//Middle Square *Target B
-            
+                if (autonomousStep == 0) {
+                    encoderDrive(0.75, 35, 35, 35, 35, 10);
+                    autonomousStep = 1;
+                }
             } else {//Closest Square *Target A
-            
+                if (autonomousStep == 0) {
+                    encoderDrive(0.75, 25, 25, 25, 25, 10);
+                    autonomousStep = 1;
+                }
             }
             /*
             * Autonomous Steps:
