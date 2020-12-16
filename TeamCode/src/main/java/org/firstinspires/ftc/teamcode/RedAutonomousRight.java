@@ -349,17 +349,17 @@ public class RedAutonomousRight extends LinearOpMode
             
             if (pos.equals("FOUR")) {//Furthest Square *Target C
                 if (autonomousStep == 0) {
-                    encoderDrive(0.75, 10, 10, 10, 10, 10);
+                    encoderDrive(0.75, 15, 15, 15, 15, 10);
                     autonomousStep = 1;
                 }
             } else if (pos.equals("ONE")) {//Middle Square *Target B
                 if (autonomousStep == 0) {
-                    encoderDrive(0.75, 10, 10, 10, 10, 10);
+                    encoderDrive(0.75, 12, 12, 12, 12, 10);
                     autonomousStep = 1;
                 }
             } else {//Closest Square *Target A
                 if (autonomousStep == 0) {
-                    encoderDrive(0.75, 10, 10, 10, 10, 10);
+                    encoderDrive(0.75, 9, 9, 9, 9, 10);
                     autonomousStep = 1;
                 }
             }
