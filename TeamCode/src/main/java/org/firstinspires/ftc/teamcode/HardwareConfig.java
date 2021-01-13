@@ -47,6 +47,10 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
  *
+ *
+ *
+ *
+ *
  * Motor channel:  Left  drive motor:        "left_drive"
  * Motor channel:  Right drive motor:        "right_drive"
  * Motor channel:  Manipulator drive motor:  "left_arm"
