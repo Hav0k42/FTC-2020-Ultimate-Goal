@@ -69,6 +69,7 @@ public class HardwareConfig
     public DcMotor rightDiscLauncher = null; //Control Hub: Port 2
 
     public Servo horizontalTurret = null; //Control Hub: Port 0
+    public Servo verticalTurret = null; //Control Hub: Port 1
 
     public WebcamName camera = null; // Control Hub
     BNO055IMU imu;
@@ -102,6 +103,7 @@ public class HardwareConfig
         leftDiscLauncher = hwMap.get(DcMotor.class, "leftDiscLauncher");
         rightDiscLauncher = hwMap.get(DcMotor.class, "rightDiscLauncher");
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
+        verticalTurret = hwMap.get(Servo.class, "verticalTurret");
 
         camera = hwMap.get(WebcamName.class, "cam");
 
@@ -121,7 +123,6 @@ public class HardwareConfig
         rightBackDrive.setPower(0);
         leftDiscLauncher.setPower(0);
         rightDiscLauncher.setPower(0);
-        horizontalTurret.setPosition(SERVO_HOME);
 //        leftArm.setPower(0);
 
         // Set all motors to run without encoders.

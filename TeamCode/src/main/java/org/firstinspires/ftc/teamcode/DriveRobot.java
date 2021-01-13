@@ -125,8 +125,8 @@ public class DriveRobot extends OpMode {
             
 
         if(gamepad1.a) {
-            leftDiscLauncherPower = 0.5;
-            rightDiscLauncherPower = 0.5;
+            leftDiscLauncherPower = 0.25;
+            rightDiscLauncherPower = 0.25;
         }
 
         currentServoPos = robot.horizontalTurret.getPosition();
@@ -161,6 +161,7 @@ public class DriveRobot extends OpMode {
         telemetry.addData("Drive Speed", driveSpeed);
         telemetry.addData("Disc Launcher Speed", leftDiscLauncherPower);
         telemetry.addData("Right Launcher Speed", rightDiscLauncherPower);
+        telemetry.addData("\nServos:\nHorizontalServoPos", currentServoPos);
 
 
     }
