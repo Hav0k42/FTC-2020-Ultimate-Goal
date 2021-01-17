@@ -159,6 +159,7 @@ public class DriveRobot extends OpMode {
 
         webcamName = hardwareMap.get(WebcamName.class, "cam");
 
+
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
@@ -320,6 +321,7 @@ public class DriveRobot extends OpMode {
      */
     double yAxisValue = 0;
     float centeredValue;
+    int horizontalServoSearchDirection = 0;//0: left, 1: right
     @Override
     public void loop() {
         // Setup a variable for each drive wheel to save power level for telemetry
@@ -379,7 +381,7 @@ public class DriveRobot extends OpMode {
         double rightFrontPower = 0;
         double leftBackPower = 0;
         double rightBackPower = 0;
-        double leftDiscLauncherPower = 0;
+        double DiscLauncherPower = 0;
         double rightDiscLauncherPower = 0;
         double currentServoPos = 0 ;
 
@@ -398,8 +400,7 @@ public class DriveRobot extends OpMode {
             
 
         if(gamepad1.a) {
-            leftDiscLauncherPower = 0.50;
-            rightDiscLauncherPower = 0.50;
+            DiscLauncherPower = 0.50;
         }
 
         currentServoPos = robot.horizontalTurret.getPosition();
@@ -421,26 +422,37 @@ public class DriveRobot extends OpMode {
 //        }
 
 
-        int horizontalServoSearchDirection = 0;//0: left, 1: right
+
         if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Automated Targeting
-            float targetCloseThreshold = 9.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird.
+            float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird.
+            float targetFarThreshold = 15.0f;
 //            if (Math.abs(centeredValue) < targetCloseThreshold) {
 //                //robot is aimed at the right spot, or at least close enough. Do nothing.
 //            } else
-            if (centeredValue > targetCloseThreshold) {
+            if (centeredValue - 90 > targetFarThreshold) {
                 //robot turret needs to turn right.
-                currentServoPos += 0.01;
-            } else if (centeredValue < 0 - targetCloseThreshold) {
+                horizontalServoSearchDirection = 0;
+                currentServoPos += 0.0004;
+            } else if (centeredValue - 90 < 0 - targetFarThreshold) {
                 //robot turret needs to turn left.
-                currentServoPos -= 0.01;
+                horizontalServoSearchDirection = 1;
+                currentServoPos -= 0.0004;
+            } else if (centeredValue - 90 > targetCloseThreshold) {
+                //robot turret needs to turn right.
+                horizontalServoSearchDirection = 0;
+                currentServoPos += 0.0001;
+            } else if (centeredValue - 90 < 0 - targetCloseThreshold) {
+                //robot turret needs to turn left.
+                horizontalServoSearchDirection = 1;
+                currentServoPos -= 0.0001;
             }
 
         } else if (!targetVisible || !activeTarget.equals("Red Tower Goal Target")) {
             if (horizontalServoSearchDirection == 0) {
-                currentServoPos += 0.01;
+                currentServoPos += 0.0001;
             }
             if (horizontalServoSearchDirection == 1) {
-                currentServoPos -= 0.01;
+                currentServoPos -= 0.0001;
             }
             if (currentServoPos <= 0) {
                 horizontalServoSearchDirection = 0;
@@ -457,8 +469,9 @@ public class DriveRobot extends OpMode {
         robot.rightFrontDrive.setPower(rightFrontPower * driveSpeed);
         robot.leftBackDrive.setPower(leftBackPower * driveSpeed);
         robot.rightBackDrive.setPower(rightBackPower * driveSpeed);
-        robot.leftDiscLauncher.setPower(leftDiscLauncherPower);
-        robot.rightDiscLauncher.setPower(rightDiscLauncherPower);
+        robot.DiscLauncher.setPower(DiscLauncherPower);
+
+        robot.horizontalTurret.setPosition(currentServoPos);
 
         telemetry.addData("test", centeredValue);
         telemetry.addData("\nMotors:\nLeft Front Power",leftFrontPower * driveSpeed);
@@ -466,8 +479,7 @@ public class DriveRobot extends OpMode {
         telemetry.addData("Left Back Power",leftBackPower * driveSpeed);
         telemetry.addData("Right Back Power",rightBackPower * driveSpeed);
         telemetry.addData("Drive Speed", driveSpeed);
-        telemetry.addData("Disc Launcher Speed", leftDiscLauncherPower);
-        telemetry.addData("Right Launcher Speed", rightDiscLauncherPower);
+        telemetry.addData("Disc Launcher Speed", DiscLauncherPower);
         telemetry.addData("\nServos:\nHorizontalServoPos", currentServoPos);
 
 

@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 /**
@@ -61,15 +62,16 @@ public class HardwareConfig
 {
     /* Public OpMode members. */
     public DcMotor  leftFrontDrive   = null; //Control Hub: Port 0
-    public DcMotor  rightFrontDrive  = null; //Expansion Hub: Port 1
+    public DcMotor  rightFrontDrive  = null; //Control Hub: Port 2
     public DcMotor  leftBackDrive   = null; //Control Hub: Port 1
-    public DcMotor  rightBackDrive  = null; //Expansion Hub: Port 0
+    public DcMotor  rightBackDrive  = null; //Control Hub: Port 3
 
-    public DcMotor leftDiscLauncher = null; //Expansion Hub: Port 2
-    public DcMotor rightDiscLauncher = null; //Control Hub: Port 2
+    public DcMotor DiscLauncher = null; //Expansion Hub: Port 0
 
-    public Servo horizontalTurret = null; //Control Hub: Port 0
+    public Servo horizontalTurret = null; //Control Hub: Port 5
     public Servo verticalTurret = null; //Control Hub: Port 1
+
+    public RevColorSensorV3 colorSensor = null;//Expansion Hub: I2C Bus 0
 
     public WebcamName camera = null; // Control Hub
     BNO055IMU imu;
@@ -100,10 +102,10 @@ public class HardwareConfig
         rightFrontDrive = hwMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive  = hwMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hwMap.get(DcMotor.class, "rightBackDrive");
-        leftDiscLauncher = hwMap.get(DcMotor.class, "leftDiscLauncher");
-        rightDiscLauncher = hwMap.get(DcMotor.class, "rightDiscLauncher");
+        DiscLauncher = hwMap.get(DcMotor.class, "discLauncher");
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
         verticalTurret = hwMap.get(Servo.class, "verticalTurret");
+        colorSensor = hwMap.get(RevColorSensorV3.class, "colorSensor");
 
         camera = hwMap.get(WebcamName.class, "cam");
 
@@ -112,8 +114,7 @@ public class HardwareConfig
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        leftDiscLauncher.setDirection(DcMotor.Direction.REVERSE);
-        rightDiscLauncher.setDirection(DcMotor.Direction.FORWARD);
+        DiscLauncher.setDirection(DcMotor.Direction.REVERSE);
 
 
         // Set all motors to zero power
@@ -121,8 +122,7 @@ public class HardwareConfig
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
-        leftDiscLauncher.setPower(0);
-        rightDiscLauncher.setPower(0);
+        DiscLauncher.setPower(0);
 //        leftArm.setPower(0);
 
         // Set all motors to run without encoders.
@@ -131,8 +131,7 @@ public class HardwareConfig
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftDiscLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDiscLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DiscLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
