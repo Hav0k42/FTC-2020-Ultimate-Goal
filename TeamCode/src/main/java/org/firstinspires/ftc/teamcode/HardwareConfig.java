@@ -67,6 +67,8 @@ public class HardwareConfig
     public DcMotor  rightBackDrive  = null; //Control Hub: Port 3
 
     public DcMotor DiscLauncher = null; //Expansion Hub: Port 0
+    
+    public DcMotor wobbleArm = null; //Expansion Hub: Port 1
 
     public Servo horizontalTurret = null; //Control Hub: Port 5
     public Servo verticalTurret = null; //Control Hub: Port 1
@@ -103,6 +105,7 @@ public class HardwareConfig
         leftBackDrive  = hwMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hwMap.get(DcMotor.class, "rightBackDrive");
         DiscLauncher = hwMap.get(DcMotor.class, "discLauncher");
+        wobbleArm = hwMap.get(DcMotor.class, "wobbleArm");
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
         verticalTurret = hwMap.get(Servo.class, "verticalTurret");
         colorSensor = hwMap.get(RevColorSensorV3.class, "colorSensor");
@@ -115,7 +118,7 @@ public class HardwareConfig
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         DiscLauncher.setDirection(DcMotor.Direction.REVERSE);
-
+        wobbleArm.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
         leftFrontDrive.setPower(0);
@@ -123,6 +126,7 @@ public class HardwareConfig
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
         DiscLauncher.setPower(0);
+        wobbleArm.setPower(0)
 //        leftArm.setPower(0);
 
         // Set all motors to run without encoders.
@@ -132,6 +136,7 @@ public class HardwareConfig
         leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         DiscLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        wobbleArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.
