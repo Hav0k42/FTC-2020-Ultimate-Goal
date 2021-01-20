@@ -423,7 +423,7 @@ public class DriveRobot extends OpMode {
 
 
 
-        if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Automated Targeting
+        if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
             float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird.
             float targetFarThreshold = 15.0f;
 //            if (Math.abs(centeredValue) < targetCloseThreshold) {
@@ -447,7 +447,13 @@ public class DriveRobot extends OpMode {
                 currentServoPos -= 0.0001;
             }
 
-        } else if (!targetVisible || !activeTarget.equals("Red Tower Goal Target")) {
+        } else if (targetVisible && activeTarget.equals("Red Alliance Target")) {
+            currentServoPos += 0.5;
+            if (currentServoPos > 1) {
+                currentServoPos = 1;
+            }
+            horizontalServoSearchDirection = 1;
+        } else if (!targetVisible) {//Robot cannot see any targets.
             if (horizontalServoSearchDirection == 0) {
                 currentServoPos += 0.0001;
             }
