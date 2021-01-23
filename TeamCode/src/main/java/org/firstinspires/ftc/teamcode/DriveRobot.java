@@ -322,6 +322,15 @@ public class DriveRobot extends OpMode {
     double yAxisValue = 0;
     float centeredValue;
     int horizontalServoSearchDirection = 0;//0: left, 1: right
+
+
+    //the following variable names will require references to the diagram drawn with the associated calculations.
+    float triangleSideA = 0f;
+    float triangleSideB = 0f;
+    float triangleSideC = (float)Math.sqrt(Math.pow(triangleSideA, 2) + Math.pow(triangleSideB, 2));
+
+    float triangleAngleZ = (float)Math.asin(triangleSideA / triangleSideC);
+
     @Override
     public void loop() {
         // Setup a variable for each drive wheel to save power level for telemetry
@@ -448,7 +457,17 @@ public class DriveRobot extends OpMode {
             }
 
         } else if (targetVisible && activeTarget.equals("Red Alliance Target")) {
-            currentServoPos += 0.5;
+            float triangleAngleX = 0f;//this angle is going to need to gotten from the vuforia stuff. Testing required to find out if its one of the ones provided, or if I need to do calculations for it.
+            float triangleSideD = 0f;//same with this side, except I know I don't need to do extra calculations.
+
+
+            float triangleAngleW = (float)(Math.PI - (triangleAngleZ + triangleAngleX));
+            float triangleSideE = (float)(Math.sqrt(Math.pow(triangleSideC, 2) + Math.pow(triangleSideD, 2)  - (2 * triangleSideC * triangleSideD * Math.cos(triangleAngleW))));
+            float triangleAngleV = (float)(Math.acos(-((Math.pow(triangleSideC, 2) - Math.pow(triangleSideE, 2) - Math.pow(triangleSideD, 2)) - (2 * triangleSideE * triangleSideD))));
+
+            float angleToTurn = (float)(triangleAngleV / Math.PI);
+
+            currentServoPos += angleToTurn;
             if (currentServoPos > 1) {
                 currentServoPos = 1;
             }
