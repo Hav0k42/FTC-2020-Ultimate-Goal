@@ -126,7 +126,7 @@ public class HardwareConfig
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
         DiscLauncher.setPower(0);
-        wobbleArm.setPower(0)
+        wobbleArm.setPower(0);
 //        leftArm.setPower(0);
 
         // Set all motors to run without encoders.
