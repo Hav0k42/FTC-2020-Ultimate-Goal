@@ -323,6 +323,8 @@ public class DriveRobot extends OpMode {
     float centeredValue;
     int horizontalServoSearchDirection = 0;//0: left, 1: right
 
+    double currentServoPos = 0 ;
+
 
     //the following variable names will require references to the diagram drawn with the associated calculations.
     float triangleSideA = 0f;
@@ -392,7 +394,6 @@ public class DriveRobot extends OpMode {
         double rightBackPower = 0;
         double DiscLauncherPower = 0;
         double rightDiscLauncherPower = 0;
-        double currentServoPos = 0 ;
 
         leftFrontPower = -Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
         rightFrontPower = -Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
@@ -411,8 +412,6 @@ public class DriveRobot extends OpMode {
         if(gamepad1.a) {
             DiscLauncherPower = 0.50;
         }
-
-        currentServoPos = robot.horizontalTurret.getPosition();
 
 //        if(gamepad1.y && !buttonY && currentServoPos < 1) {
 //            robot.horizontalTurret.setPosition(currentServoPos + 0.05);
@@ -480,9 +479,11 @@ public class DriveRobot extends OpMode {
                 currentServoPos -= 0.0001;
             }
             if (currentServoPos <= 0) {
+                currentServoPos = 0;
                 horizontalServoSearchDirection = 0;
             }
             if (currentServoPos >= 1) {
+                currentServoPos = 1;
                 horizontalServoSearchDirection = 1;
             }
         }//scan surroundings until correct target is found
