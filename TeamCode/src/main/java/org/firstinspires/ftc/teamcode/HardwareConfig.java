@@ -81,6 +81,10 @@ public class HardwareConfig
 //    public Servo    leftClaw    = null;
 //    public Servo    rightClaw   = null;
 
+    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+
+
     public static final double MID_SERVO       =  0.5 ;
     public static final double SERVO_HOME    =  0.1;
     public static final double SERVO_MAX  = 0.9 ;
@@ -91,7 +95,14 @@ public class HardwareConfig
 
     /* Constructor */
     public HardwareConfig(){
+        parameters.mode                = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled      = false;
 
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
     }
 
     /* Initialize standard Hardware interfaces */
@@ -109,6 +120,9 @@ public class HardwareConfig
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
         verticalTurret = hwMap.get(Servo.class, "verticalTurret");
         colorSensor = hwMap.get(RevColorSensorV3.class, "colorSensor");
+
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
 
         camera = hwMap.get(WebcamName.class, "cam");
 

@@ -47,6 +47,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGR
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -220,24 +221,24 @@ public class DriveRobot extends OpMode {
          */
 
         //Set the position of the perimeter targets with relation to origin (center of field)
-        redAllianceTarget.setLocation(OpenGLMatrix
-                .translation(0, -halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-
-        blueAllianceTarget.setLocation(OpenGLMatrix
-                .translation(0, halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
-        frontWallTarget.setLocation(OpenGLMatrix
-                .translation(-halfField, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90)));
-
-        // The tower goal targets are located a quarter field length from the ends of the back perimeter wall.
-        blueTowerGoalTarget.setLocation(OpenGLMatrix
-                .translation(halfField, quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , -90)));
-        redTowerGoalTarget.setLocation(OpenGLMatrix
-                .translation(halfField, -quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+//        redAllianceTarget.setLocation(OpenGLMatrix
+//                .translation(0, -halfField, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
+//
+//        blueAllianceTarget.setLocation(OpenGLMatrix
+//                .translation(0, halfField, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
+//        frontWallTarget.setLocation(OpenGLMatrix
+//                .translation(-halfField, 0, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90)));
+//
+//        // The tower goal targets are located a quarter field length from the ends of the back perimeter wall.
+//        blueTowerGoalTarget.setLocation(OpenGLMatrix
+//                .translation(halfField, quadField, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , -90)));
+//        redTowerGoalTarget.setLocation(OpenGLMatrix
+//                .translation(halfField, -quadField, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
         //
         // Create a transformation matrix describing where the phone is on the robot.
@@ -320,15 +321,17 @@ public class DriveRobot extends OpMode {
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
     double yAxisValue = 0;
+    double zAxisValue = 0;
     float centeredValue;
     int horizontalServoSearchDirection = 0;//0: left, 1: right
+    double lastOrientation = 0;
 
     double currentServoPos = 0 ;
 
 
     //the following variable names will require references to the diagram drawn with the associated calculations.
-    float triangleSideA = 0f;
-    float triangleSideB = 0f;
+    float triangleSideA = 35.5f;
+    float triangleSideB = 70.5f;
     float triangleSideC = (float)Math.sqrt(Math.pow(triangleSideA, 2) + Math.pow(triangleSideB, 2));
 
     float triangleAngleZ = (float)Math.asin(triangleSideA / triangleSideC);
@@ -366,10 +369,15 @@ public class DriveRobot extends OpMode {
             telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                     translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);//Z-axis: vertical, Y-axis: Perpendicular Distance, X-axis: Parallel Distance
             yAxisValue = translation.get(1) / mmPerInch;
+            zAxisValue = translation.get(0) / mmPerInch;
             // express the rotation of the robot in degrees.
-            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+            Orientation rotation = Orientation.getOrientation(lastLocation, INTRINSIC, XYZ, DEGREES);
             telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-            centeredValue = rotation.thirdAngle;
+            centeredValue = rotation.secondAngle;
+            centeredValue += 180f;
+            if (centeredValue > 180) {
+                centeredValue -= 360;
+            }
 
 
         }
@@ -432,32 +440,26 @@ public class DriveRobot extends OpMode {
 
 
         if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
-            float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird.
-            float targetFarThreshold = 15.0f;
+            float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
 //            if (Math.abs(centeredValue) < targetCloseThreshold) {
 //                //robot is aimed at the right spot, or at least close enough. Do nothing.
 //            } else
-            if (centeredValue - 90 > targetFarThreshold) {
+            if (centeredValue > targetCloseThreshold) {
                 //robot turret needs to turn right.
                 horizontalServoSearchDirection = 0;
-                currentServoPos += 0.0004;
-            } else if (centeredValue - 90 < 0 - targetFarThreshold) {
+                currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
+            } else if (centeredValue < 0 - targetCloseThreshold) {
                 //robot turret needs to turn left.
                 horizontalServoSearchDirection = 1;
-                currentServoPos -= 0.0004;
-            } else if (centeredValue - 90 > targetCloseThreshold) {
-                //robot turret needs to turn right.
-                horizontalServoSearchDirection = 0;
-                currentServoPos += 0.0001;
-            } else if (centeredValue - 90 < 0 - targetCloseThreshold) {
-                //robot turret needs to turn left.
-                horizontalServoSearchDirection = 1;
-                currentServoPos -= 0.0001;
+                currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
             }
 
+            lastOrientation = robot.imu.getAngularOrientation().thirdAngle;//
+            telemetry.addData("Angle Rotation", lastOrientation);
+
         } else if (targetVisible && activeTarget.equals("Red Alliance Target")) {
-            float triangleAngleX = 0f;//this angle is going to need to gotten from the vuforia stuff. Testing required to find out if its one of the ones provided, or if I need to do calculations for it.
-            float triangleSideD = 0f;//same with this side, except I know I don't need to do extra calculations.
+            float triangleAngleX = centeredValue;//this angle is going to need to gotten from the vuforia stuff. Testing required to find out if its one of the ones provided, or if I need to do calculations for it.
+            float triangleSideD = (float)zAxisValue;//same with this side, except I know I don't need to do extra calculations.
 
 
             float triangleAngleW = (float)(Math.PI - (triangleAngleZ + triangleAngleX));
@@ -466,9 +468,14 @@ public class DriveRobot extends OpMode {
 
             float angleToTurn = (float)(triangleAngleV / Math.PI);
 
-            currentServoPos += angleToTurn;
+            if (!Double.isNaN(angleToTurn)) {//make sure the value isn't imaginary.
+                currentServoPos -= angleToTurn;
+            }
             if (currentServoPos > 1) {
                 currentServoPos = 1;
+            }
+            if (currentServoPos < 0) {
+                currentServoPos = 0;
             }
             horizontalServoSearchDirection = 1;
         } else if (!targetVisible) {//Robot cannot see any targets.
