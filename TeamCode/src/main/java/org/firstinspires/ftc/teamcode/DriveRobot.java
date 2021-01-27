@@ -458,7 +458,12 @@ public class DriveRobot extends OpMode {
 //        else if (!gamepad1.b) {
 //            buttonB = false;
 //        }
-
+        if(gamepad1.left_trigger && !buttonY && currentServoPos <1) {
+            robot.launcherServo.setPosition(currentServoPos +.05);
+            buttonY = true;
+            
+        else if (!gamepad1.left_trigger)
+            buttonY = false;
 
 
         if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
