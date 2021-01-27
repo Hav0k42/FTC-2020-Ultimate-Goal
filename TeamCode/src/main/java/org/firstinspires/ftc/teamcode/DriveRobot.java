@@ -43,6 +43,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
@@ -58,6 +59,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
@@ -418,7 +420,27 @@ public class DriveRobot extends OpMode {
             
 
         if(gamepad1.a) {
-            DiscLauncherPower = 0.50;
+            DiscLauncherPower = 0.5;
+        }
+
+        if (gamepad1.b && activeTarget.equals("Red Tower Goal Target")) {
+            double angleToFireFrom = calculateAngle(zAxisValue, 10);
+            runtime.reset();
+            while (runtime.seconds() < 2) {
+
+            }
+            robot.DiscLauncher.setPower(0.5);
+            runtime.reset();
+            while (runtime.seconds() < 0.2) {
+
+            }
+            robot.launcherServo.setPosition(1);
+            runtime.reset();
+            while (runtime.seconds() < 1) {
+
+            }
+            robot.launcherServo.setPosition(0.7);
+            robot.DiscLauncher.setPower(0);
         }
 
 //        if(gamepad1.y && !buttonY && currentServoPos < 1) {
