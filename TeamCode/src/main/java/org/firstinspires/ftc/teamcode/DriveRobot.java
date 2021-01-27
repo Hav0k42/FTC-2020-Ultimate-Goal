@@ -337,6 +337,7 @@ public class DriveRobot extends OpMode {
     float triangleSideC = (float)Math.sqrt(Math.pow(triangleSideA, 2) + Math.pow(triangleSideB, 2));
 
     float triangleAngleZ = (float)Math.asin(triangleSideA / triangleSideC);
+    double launcherServoPosition = 0.4;
 
     @Override
     public void loop() {
@@ -426,20 +427,23 @@ public class DriveRobot extends OpMode {
         if (gamepad1.b && activeTarget.equals("Red Tower Goal Target")) {
             double angleToFireFrom = calculateAngle(zAxisValue, 10);
             runtime.reset();
-            while (runtime.seconds() < 2) {
+            robot.DiscLauncher.setPower(0.5);
+            while (runtime.seconds() < 3) {
 
             }
-            robot.DiscLauncher.setPower(0.5);
+
             runtime.reset();
             while (runtime.seconds() < 0.2) {
 
             }
-            robot.launcherServo.setPosition(1);
+            launcherServoPosition = 1;
+            robot.launcherServo.setPosition((launcherServoPosition));
             runtime.reset();
             while (runtime.seconds() < 1) {
 
             }
-            robot.launcherServo.setPosition(0.7);
+            launcherServoPosition = 0.4;
+            robot.launcherServo.setPosition((launcherServoPosition));
             robot.DiscLauncher.setPower(0);
         }
 
@@ -458,13 +462,13 @@ public class DriveRobot extends OpMode {
 //        else if (!gamepad1.b) {
 //            buttonB = false;
 //        }
-        if(gamepad1.left_trigger != 0 && !buttonY && currentServoPos < 1) {
-            robot.launcherServo.setPosition(currentServoPos + .05);
-            buttonY = true;
-        }
-        else if (gamepad1.left_trigger == 0) {
-            buttonY = false;
-        }
+//        if(gamepad1.left_trigger != 0 && !buttonY && currentServoPos < 1) {
+//            robot.launcherServo.setPosition(currentServoPos + .05);
+//            buttonY = true;
+//        }
+//        else if (gamepad1.left_trigger == 0) {
+//            buttonY = false;
+//        }
 
         if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
             float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
@@ -532,6 +536,7 @@ public class DriveRobot extends OpMode {
         robot.DiscLauncher.setPower(DiscLauncherPower);
 
         robot.horizontalTurret.setPosition(currentServoPos);
+        robot.launcherServo.setPosition(launcherServoPosition);
 
         telemetry.addData("test", centeredValue);
         telemetry.addData("\nMotors:\nLeft Front Power",leftFrontPower * driveSpeed);
@@ -541,6 +546,7 @@ public class DriveRobot extends OpMode {
         telemetry.addData("Drive Speed", driveSpeed);
         telemetry.addData("Disc Launcher Speed", DiscLauncherPower);
         telemetry.addData("\nServos:\nHorizontalServoPos", currentServoPos);
+        telemetry.addData("LauncherServoPosition", launcherServoPosition);
 
 
     }
