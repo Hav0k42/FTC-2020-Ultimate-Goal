@@ -458,13 +458,13 @@ public class DriveRobot extends OpMode {
 //        else if (!gamepad1.b) {
 //            buttonB = false;
 //        }
-        if(gamepad1.left_trigger && !buttonY && currentServoPos <1) {
-            robot.launcherServo.setPosition(currentServoPos +.05);
+        if(gamepad1.left_trigger != 0 && !buttonY && currentServoPos < 1) {
+            robot.launcherServo.setPosition(currentServoPos + .05);
             buttonY = true;
-            
-        else if (!gamepad1.left_trigger)
+        }
+        else if (gamepad1.left_trigger == 0) {
             buttonY = false;
-
+        }
 
         if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
             float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
