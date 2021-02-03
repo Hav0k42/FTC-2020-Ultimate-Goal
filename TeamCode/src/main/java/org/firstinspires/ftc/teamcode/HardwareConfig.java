@@ -35,7 +35,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 /**
@@ -74,7 +74,7 @@ public class HardwareConfig
     public Servo verticalTurret = null; //Control Hub: Port 1
     public Servo launcherServo = null; // Control Hub: Port 4
 
-    public RevColorSensorV3 colorSensor = null;//Expansion Hub: I2C Bus 0
+    public ColorSensor colorSensor = null;//Expansion Hub: I2C Bus 0
 
     public WebcamName camera = null; // Control Hub
     BNO055IMU imu;
@@ -121,7 +121,7 @@ public class HardwareConfig
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
         verticalTurret = hwMap.get(Servo.class, "verticalTurret");
         launcherServo = hwMap.get(Servo.class, "launcherServo");
-        colorSensor = hwMap.get(RevColorSensorV3.class, "colorSensor");
+        colorSensor = hwMap.get(ColorSensor.class, "colorSensor");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
