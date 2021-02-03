@@ -73,7 +73,7 @@ public class CameraRingExample extends LinearOpMode
         while (opModeIsActive())
         {
             telemetry.addData("Analysis", pipeline.getAnalysis());
-            telemetry.addData("Position", pos);
+            telemetry.addData("Position", pipeline.position.toString());
             telemetry.update();
 
             // Don't burn CPU cycles busy-looping in this sample
@@ -102,10 +102,10 @@ public class CameraRingExample extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(181,98);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(161,98);
 
-        static final int REGION_WIDTH = 35;
-        static final int REGION_HEIGHT = 25;
+        static final int REGION_WIDTH = 60;
+        static final int REGION_HEIGHT = 40;
 
         final int FOUR_RING_THRESHOLD = 150;
         final int ONE_RING_THRESHOLD = 135;

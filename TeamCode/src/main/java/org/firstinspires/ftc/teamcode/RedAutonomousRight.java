@@ -48,6 +48,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.lang.ref.PhantomReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,25 +122,104 @@ public class RedAutonomousRight extends LinearOpMode
             // out when the RC activity is in portrait. We do our actual image processing assuming
             // landscape orientation, though.
 
-            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener(){
+            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
                 @Override
                 public void onOpened() {
-        
+                    webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
                 }
             });
             
-            pos = pipeline.position.toString();
+
         
-            webCam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener(){
-                @Override
-                public void onClose() {
-        
-                }
-            });
+
             
             
         webcamName = hardwareMap.get(WebcamName.class, "cam");
+
+        // WARNING:
+        // In this sample, we do not wait for PLAY to be pressed.  Target Tracking is started immediately when INIT is pressed.
+        // This sequence is used to enable the new remote DS Camera Preview feature to be used with this sample.
+        // CONSEQUENTLY do not put any driving commands in this loop.
+        // To restore the normal opmode structure, just un-comment the following line:
+
+        // waitForStart();
+
+        // Note: To use the remote camera preview:
+        // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
+        // Tap the preview window to receive a fresh image.
+
+
+
+
+
         
+        
+        robot.init(hardwareMap);
+
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Resetting Encoders");    //
+        telemetry.update();
+
+        robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Send telemetry message to indicate successful Encoder reset
+        telemetry.addData("Path0",  "Starting at %7d :%7d",
+                          robot.leftFrontDrive.getCurrentPosition(),
+                          robot.leftBackDrive.getCurrentPosition(),
+                          robot.rightFrontDrive.getCurrentPosition(),
+                          robot.rightBackDrive.getCurrentPosition()
+                );
+        telemetry.update();
+        
+
+        telemetry.addData("Status", "Ready to start");
+        telemetry.update();
+        
+        waitForStart();
+        double turretServoPosition = 0;
+        int autonomousStep = 0;
+        int preAutoStep = 0;
+        while (opModeIsActive() && preAutoStep != 2) {
+            if (preAutoStep == 0) {
+                turretServoPosition = 0.45;
+                preAutoStep = 1;
+                runtime.reset();
+            }
+            if (preAutoStep == 1) {
+                pos = pipeline.position.toString();
+                analysis = pipeline.getAnalysis();
+                if (analysis > 110) {
+                    if (runtime.seconds() > 1.5) {
+                        preAutoStep = 2;
+                    }
+
+                }
+            }
+            telemetry.addData("Analysis", pipeline.getAnalysis());
+            telemetry.addData("Position", pipeline.position.toString());
+            telemetry.update();
+            robot.horizontalTurret.setPosition(turretServoPosition);
+        }
+        
+
+
+
+
+        webCam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener(){
+            @Override
+            public void onClose() {
+
+            }
+        });
+
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -194,24 +274,6 @@ public class RedAutonomousRight extends LinearOpMode
          */
 
         //Set the position of the perimeter targets with relation to origin (center of field)
-        redAllianceTarget.setLocation(OpenGLMatrix
-                .translation(0, -halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-
-        blueAllianceTarget.setLocation(OpenGLMatrix
-                .translation(0, halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
-        frontWallTarget.setLocation(OpenGLMatrix
-                .translation(-halfField, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90)));
-
-        // The tower goal targets are located a quarter field length from the ends of the back perimeter wall.
-        blueTowerGoalTarget.setLocation(OpenGLMatrix
-                .translation(halfField, quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , -90)));
-        redTowerGoalTarget.setLocation(OpenGLMatrix
-                .translation(halfField, -quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
         //
         // Create a transformation matrix describing where the phone is on the robot.
@@ -253,58 +315,9 @@ public class RedAutonomousRight extends LinearOpMode
         for (VuforiaTrackable trackable : allTrackables) {
             ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
         }
-
-        // WARNING:
-        // In this sample, we do not wait for PLAY to be pressed.  Target Tracking is started immediately when INIT is pressed.
-        // This sequence is used to enable the new remote DS Camera Preview feature to be used with this sample.
-        // CONSEQUENTLY do not put any driving commands in this loop.
-        // To restore the normal opmode structure, just un-comment the following line:
-
-        // waitForStart();
-
-        // Note: To use the remote camera preview:
-        // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
-        // Tap the preview window to receive a fresh image.
-
-
-
-
-
-        
-        
-        robot.init(hardwareMap);
-
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Status", "Resetting Encoders");    //
-        telemetry.update();
-
-        robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0",  "Starting at %7d :%7d",
-                          robot.leftFrontDrive.getCurrentPosition(),
-                          robot.leftBackDrive.getCurrentPosition(),
-                          robot.rightFrontDrive.getCurrentPosition(),
-                          robot.rightBackDrive.getCurrentPosition()
-                );
-        telemetry.update();
-        
         targetsUltimateGoal.activate();
-        telemetry.addData("Status", "Ready to start");
-        telemetry.update();
-        
-        waitForStart();
-        
-        
-        int autonomousStep = 0;
+
+
         while (opModeIsActive())
         {
             telemetry.addData("Analysis", analysis);
@@ -346,23 +359,34 @@ public class RedAutonomousRight extends LinearOpMode
             telemetry.update();
 
 
+
+            if (autonomousStep == 0) {
+                encoderDrive(0.75, -19, -19, -19, -19, 10);
+                autonomousStep = 1;
+            }
             
-            if (pos.equals("FOUR")) {//Furthest Square *Target C
-                if (autonomousStep == 0) {
-                    encoderDrive(0.75, 15, 15, 15, 15, 10);
-                    autonomousStep = 1;
+            if (analysis > 131) {//Furthest Square *Target C
+                pos = "FOUR";
+                if (autonomousStep == 1) {
+                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
+                    autonomousStep = 2;
                 }
-            } else if (pos.equals("ONE")) {//Middle Square *Target B
-                if (autonomousStep == 0) {
-                    encoderDrive(0.75, 12, 12, 12, 12, 10);
-                    autonomousStep = 1;
+            } else if (analysis < 131 && analysis > 125) {//Middle Square *Target B
+                pos = "ONE";
+                if (autonomousStep == 1) {
+                    autonomousStep = 2;
                 }
             } else {//Closest Square *Target A
-                if (autonomousStep == 0) {
-                    encoderDrive(0.75, 9, 9, 9, 9, 10);
-                    autonomousStep = 1;
+                pos = "NONE";
+                if (autonomousStep == 1) {
+                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
+                    autonomousStep = 2;
                 }
             }
+
+
+            robot.horizontalTurret.setPosition(turretServoPosition);
+
             /*
             * Autonomous Steps:
             * 1: Scan the rings to see which position the wobble goal should go
@@ -487,10 +511,10 @@ public class RedAutonomousRight extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(181,98);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(160,98);
 
-        static final int REGION_WIDTH = 35;
-        static final int REGION_HEIGHT = 25;
+        static final int REGION_WIDTH = 60;
+        static final int REGION_HEIGHT = 40;
 
         final int FOUR_RING_THRESHOLD = 150;
         final int ONE_RING_THRESHOLD = 135;
