@@ -382,98 +382,184 @@ public class RedAutonomousRight extends LinearOpMode
 
 
             if (autonomousStep == 0) {//Drive to the middle of the goals
-                encoderDrive(0.75, -19, -19, -19, -19, 10);
+                if (analysis < 125) {
+                    encoderDrive(0.75, -10.5, -10.5, -10.5, -10.5, 10);
+                } else {
+                    encoderDrive(0.75, -19, -19, -19, -19, 10);
+                }
                 autonomousStep = 1;
             }//Drive to the middle of the goals
             
             if (analysis > 131) {//Furthest Square *Target C
                 pos = "FOUR";
                 if (autonomousStep == 1) {
-                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
-                    //drop the wobble goal
-                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
+                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
+
+
+
+                    robot.wobbleServo.setPosition(0);
+                    runtime.reset();
+                    while (runtime.seconds() < 1 ) {}
+                    while (runtime.seconds() > 1 && runtime.seconds() < 2) {
+                        robot.wobbleArm.setPower(0.2);
+                    }
+                        robot.wobbleArm.setPower(0);
+
+                    runtime.reset();
+                    while (runtime.seconds() < 0.3 ) {}
+
+                    runtime.reset();
+                    while (runtime.seconds() > 0 && runtime.seconds() < 1) {
+                        robot.wobbleArm.setPower(-0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleServo.setPosition(1);
+
+                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
 
                     autonomousStep = 2;
                 }
             } else if (analysis < 131 && analysis > 125) {//Middle Square *Target B
                 pos = "ONE";
                 if (autonomousStep == 1) {
-                    //drop the wobble goal
+
+
+                    robot.wobbleServo.setPosition(0);
+                    runtime.reset();
+                    while (runtime.seconds() < 1 ) {}
+                    while (runtime.seconds() > 1 && runtime.seconds() < 2) {
+                        robot.wobbleArm.setPower(0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+
+
+                    runtime.reset();
+                    while (runtime.seconds() < 0.3 ) {}
+
+
+                    runtime.reset();
+                    while (runtime.seconds() > 0 && runtime.seconds() < 1) {
+                        robot.wobbleArm.setPower(-0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleServo.setPosition(1);
+
                     autonomousStep = 2;
                 }
             } else {//Closest Square *Target A
                 pos = "NONE";
                 if (autonomousStep == 1) {
-                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
-                    //drop the wobble goal
-                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
+                    encoderDrive(0.5, -2.3, -2.3, 2.3, 2.3, 10);
+
+
+
+                    robot.wobbleServo.setPosition(0);
+                    runtime.reset();
+                    while (runtime.seconds() < 1 ) {}
+                    while (runtime.seconds() > 1 && runtime.seconds() < 2) {
+                        robot.wobbleArm.setPower(0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+
+
+                    runtime.reset();
+                    while (runtime.seconds() < 0.3 ) {}
+
+
+                    runtime.reset();
+                    while (runtime.seconds() > 0 && runtime.seconds() < 1) {
+                        robot.wobbleArm.setPower(-0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleServo.setPosition(1);
+
+
+                    encoderDrive(0.5, 2.3, 2.3, -2.3, -2.3, 10);
                     autonomousStep = 2;
                 }
             }
 
             if (autonomousStep == 2 ) {//Drive behind the line, and shoot off 3 rings.
-                encoderDrive(0.75, 14, 14, 14, 14, 10);
+                if (analysis >= 125) {
+                    encoderDrive(0.75, 10, 10, 10, 10, 10);
+                }
                 double angleToFireFrom = calculateAngle(zAxisValue, 10);
                 runtime.reset();
                 robot.DiscLauncher.setPower(0.5);
-                while (runtime.seconds() < 3) {
+                while (runtime.seconds() < 3) {}
 
-                }
 
+                robot.launcherServo.setPosition(1);
                 runtime.reset();
-                while (runtime.seconds() < 0.2) {
+                while (runtime.seconds() < 1) {}
+                robot.launcherServo.setPosition(0.4);
+                while (runtime.seconds() < 0.3) {}
 
-                }
-                launcherServoPosition = 1;
-                robot.launcherServo.setPosition((launcherServoPosition));
+
+                robot.launcherServo.setPosition(1);
                 runtime.reset();
-                while (runtime.seconds() < 1) {
+                while (runtime.seconds() < 1) {}
+                robot.launcherServo.setPosition(0.4);
+                while (runtime.seconds() < 0.3) {}
 
-                }
-                launcherServoPosition = 0.4;
-                robot.launcherServo.setPosition((launcherServoPosition));
-                while (runtime.seconds() < 0.3) {
 
-                }
-                launcherServoPosition = 1;
-                robot.launcherServo.setPosition((launcherServoPosition));
+                robot.launcherServo.setPosition(1);
                 runtime.reset();
-                while (runtime.seconds() < 1) {
+                while (runtime.seconds() < 1) {}
+                robot.launcherServo.setPosition(0.4);
+                while (runtime.seconds() < 0.3) {}
 
-                }
-                launcherServoPosition = 0.4;
-                robot.launcherServo.setPosition((launcherServoPosition));
-                while (runtime.seconds() < 0.3) {
 
-                }
-                launcherServoPosition = 1;
-                robot.launcherServo.setPosition((launcherServoPosition));
-                runtime.reset();
-                while (runtime.seconds() < 1) {
-
-                }
-                launcherServoPosition = 0.4;
-                robot.launcherServo.setPosition((launcherServoPosition));
-                while (runtime.seconds() < 0.3) {
-
-                }
                 robot.DiscLauncher.setPower(0);
+
+                if (analysis < 125) {
+                    robot.leftBackDrive.setPower(-0.5);
+                    robot.leftFrontDrive.setPower(0.5);
+                    robot.rightBackDrive.setPower(0.5);
+                    robot.rightFrontDrive.setPower(-0.5);
+
+                    runtime.reset();
+                    while (runtime.seconds() < 1.2) {}
+
+                    robot.leftBackDrive.setPower(0);
+                    robot.leftFrontDrive.setPower(0);
+                    robot.rightBackDrive.setPower(0);
+                    robot.rightFrontDrive.setPower(0);
+                }
                 autonomousStep = 3;
-            }//Drive behind the line, and shoot off 3 rings.
+            }
 
             if (autonomousStep == 3) {//drive forward until the color sensor sees white.
                 robot.leftBackDrive.setPower(-0.5);
                 robot.leftFrontDrive.setPower(-0.5);
                 robot.rightBackDrive.setPower(-0.5);
                 robot.rightFrontDrive.setPower(-0.5);
-                while (robot.colorSensor.blue() < 30 && robot.colorSensor.green() < 30 && robot.colorSensor.red() < 30) {
+                runtime.reset();
+                while (robot.colorSensor.blue() < 300 && robot.colorSensor.green() < 600 && robot.colorSensor.red() < 500 && runtime.seconds() < 2) {
 
+                }
+
+
+
+                robot.leftBackDrive.setPower(0);
+                robot.leftFrontDrive.setPower(0);
+                robot.rightBackDrive.setPower(0);
+                robot.rightFrontDrive.setPower(0);
+
+
+                runtime.reset();
+                while (runtime.seconds() < 0.25) {
+                    robot.leftBackDrive.setPower(0.5);
+                    robot.leftFrontDrive.setPower(0.5);
+                    robot.rightBackDrive.setPower(0.5);
+                    robot.rightFrontDrive.setPower(0.5);
                 }
                 robot.leftBackDrive.setPower(0);
                 robot.leftFrontDrive.setPower(0);
                 robot.rightBackDrive.setPower(0);
                 robot.rightFrontDrive.setPower(0);
                 autonomousStep = 4;
+
             }//drive forward until the color sensor sees white.
 
 

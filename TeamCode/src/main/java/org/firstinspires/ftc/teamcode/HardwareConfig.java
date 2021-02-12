@@ -61,17 +61,18 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 public class HardwareConfig
 {
     /* Public OpMode members. */
-    public DcMotor  leftFrontDrive   = null; //Control Hub: Port 0
+    public DcMotor  leftFrontDrive   = null; //Control Hub: Port 1
     public DcMotor  rightFrontDrive  = null; //Control Hub: Port 2
-    public DcMotor  leftBackDrive   = null; //Control Hub: Port 1
-    public DcMotor  rightBackDrive  = null; //Control Hub: Port 3
+    public DcMotor  leftBackDrive   = null; //Control Hub: Port 3
+    public DcMotor  rightBackDrive  = null; //Control Hub: Port 0
 
     public DcMotor DiscLauncher = null; //Expansion Hub: Port 0
     
     public DcMotor wobbleArm = null; //Expansion Hub: Port 1
 
+    public Servo wobbleServo = null; //Control Hub: Port 2
     public Servo horizontalTurret = null; //Control Hub: Port 5
-    public Servo verticalTurret = null; //Control Hub: Port 1
+    public Servo verticalTurret = null; //Control Hub: Port 3
     public Servo launcherServo = null; // Control Hub: Port 4
 
     public ColorSensor colorSensor = null;//Expansion Hub: I2C Bus 0
@@ -118,6 +119,7 @@ public class HardwareConfig
         rightBackDrive = hwMap.get(DcMotor.class, "rightBackDrive");
         DiscLauncher = hwMap.get(DcMotor.class, "discLauncher");
         wobbleArm = hwMap.get(DcMotor.class, "wobbleArm");
+        wobbleServo = hwMap.get(Servo.class, "wobbleServo");
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
         verticalTurret = hwMap.get(Servo.class, "verticalTurret");
         launcherServo = hwMap.get(Servo.class, "launcherServo");

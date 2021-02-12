@@ -140,6 +140,7 @@ public class DriveRobot extends OpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime timer = new ElapsedTime();
     HardwareConfig robot = new HardwareConfig();
     double initialDiscVelocity = 20.0; //speed of the disc cannon in meters per second.
     double cannonRadius = 0.2; //radius of the cannon in meters.
@@ -317,6 +318,7 @@ public class DriveRobot extends OpMode {
     @Override
     public void start() {
         runtime.reset();
+        timer.reset();
     }
 
     /*
@@ -338,6 +340,14 @@ public class DriveRobot extends OpMode {
 
     float triangleAngleZ = (float)Math.asin(triangleSideA / triangleSideC);
     double launcherServoPosition = 0.4;
+
+    int toggleWobbleFlag = 0;
+    int toggleWobbleTimerFlag = 0;
+    int wobblePos = 0;
+    double wobbleServoPos = 1;
+    int verticalTurretPos = 0;
+    int verticalTurretDirection = 0;
+
 
     @Override
     public void loop() {
@@ -405,6 +415,7 @@ public class DriveRobot extends OpMode {
         double rightBackPower = 0;
         double DiscLauncherPower = 0;
         double rightDiscLauncherPower = 0;
+        double wobbleArmPower = 0;
 
         leftFrontPower = -Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
         rightFrontPower = -Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
@@ -447,28 +458,64 @@ public class DriveRobot extends OpMode {
             robot.DiscLauncher.setPower(0);
         }
 
-//        if(gamepad1.y && !buttonY && currentServoPos < 1) {
-//            robot.horizontalTurret.setPosition(currentServoPos + 0.05);
-//            buttonY = true;
-//        }
-//        else if (!gamepad1.y) {
-//            buttonY = false;
-//        }
-//
-//        if(gamepad1.b && !buttonB && currentServoPos > 0) {
-//            robot.horizontalTurret.setPosition(currentServoPos - 0.05);
-//            buttonB = true;
-//        }
-//        else if (!gamepad1.b) {
-//            buttonB = false;
-//        }
-//        if(gamepad1.left_trigger != 0 && !buttonY && currentServoPos < 1) {
-//            robot.launcherServo.setPosition(currentServoPos + .05);
-//            buttonY = true;
-//        }
-//        else if (gamepad1.left_trigger == 0) {
-//            buttonY = false;
-//        }
+        if (gamepad1.x && toggleWobbleFlag == 0) {
+            if (wobblePos == 0) {
+                wobbleServoPos = 0;
+                if (toggleWobbleTimerFlag == 0) {
+                    timer.reset();
+                    toggleWobbleTimerFlag = 1;
+                }
+                if (timer.seconds() > 1 && timer.seconds() < 2) {
+                    wobbleArmPower = 0.2;
+                } else {
+                    wobbleArmPower = 0;
+                }
+                if (timer.seconds() > 2 && toggleWobbleTimerFlag == 1) {
+                    toggleWobbleFlag = 1;
+                    wobblePos = 1;
+                    toggleWobbleTimerFlag = 0;
+                }
+            } else if (wobblePos == 1) {
+                if (toggleWobbleTimerFlag == 0) {
+                    timer.reset();
+                    toggleWobbleTimerFlag = 1;
+                }
+                if (timer.seconds() > 0 && timer.seconds() < 1) {
+                    wobbleArmPower = -0.2;
+                } else {
+                    wobbleArmPower = 0;
+                    wobbleServoPos = 1;
+                }
+                if (timer.seconds() > 2 && toggleWobbleTimerFlag == 1) {
+                    toggleWobbleFlag = 1;
+                    wobblePos = 0;
+                    toggleWobbleTimerFlag = 0;
+                }
+            }
+        }
+
+        if (!gamepad1.x && toggleWobbleFlag == 1) {
+            toggleWobbleFlag = 0;
+        }
+
+        if (true) {
+            if (verticalTurretDirection == 0) {
+                verticalTurretPos += 0.05;
+            }
+            if (verticalTurretDirection == 1) {
+                verticalTurretPos -= 0.05;
+            }
+            if (verticalTurretPos <= 0) {
+                verticalTurretPos = 0;
+                verticalTurretDirection = 0;
+            }
+            if (verticalTurretPos >= 1) {
+                verticalTurretPos = 1;
+                verticalTurretDirection = 1;
+            }
+        }
+
+
 
         if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
             float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
@@ -534,19 +581,27 @@ public class DriveRobot extends OpMode {
         robot.leftBackDrive.setPower(leftBackPower * driveSpeed);
         robot.rightBackDrive.setPower(rightBackPower * driveSpeed);
         robot.DiscLauncher.setPower(DiscLauncherPower);
+        robot.wobbleArm.setPower(wobbleArmPower);
 
+        robot.wobbleServo.setPosition(wobbleServoPos);
+        robot.verticalTurret.setPosition(verticalTurretPos);
         robot.horizontalTurret.setPosition(currentServoPos);
         robot.launcherServo.setPosition(launcherServoPosition);
 
-        telemetry.addData("test", centeredValue);
         telemetry.addData("\nMotors:\nLeft Front Power",leftFrontPower * driveSpeed);
         telemetry.addData("Right Front Power",rightFrontPower * driveSpeed);
         telemetry.addData("Left Back Power",leftBackPower * driveSpeed);
         telemetry.addData("Right Back Power",rightBackPower * driveSpeed);
         telemetry.addData("Drive Speed", driveSpeed);
         telemetry.addData("Disc Launcher Speed", DiscLauncherPower);
-        telemetry.addData("\nServos:\nHorizontalServoPos", currentServoPos);
-        telemetry.addData("LauncherServoPosition", launcherServoPosition);
+        telemetry.addData("Wobble Arm", wobbleArmPower);
+        telemetry.addData("\nServos:\nHorizontal Servo Position", currentServoPos);
+        telemetry.addData("Vertical Servo Position", verticalTurretPos);
+        telemetry.addData("Launcher Servo Position", launcherServoPosition);
+        telemetry.addData("Wobble Arm Servo Posiiton", wobbleServoPos);
+        telemetry.addData("\nColor Data\nRed", robot.colorSensor.red());
+        telemetry.addData("Green", robot.colorSensor.green());
+        telemetry.addData("Blue", robot.colorSensor.blue());
 
 
     }
