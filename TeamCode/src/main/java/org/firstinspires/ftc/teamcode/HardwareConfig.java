@@ -66,11 +66,16 @@ public class HardwareConfig
     public DcMotor  leftBackDrive   = null; //Control Hub: Port 3
     public DcMotor  rightBackDrive  = null; //Control Hub: Port 0
 
+    public DcMotor  conveyorMotor = null; //Expansion Hub: Port 2
+    public DcMotor  collectionMotor = null; //Expansion Hub: Port 3
+
     public DcMotor DiscLauncher = null; //Expansion Hub: Port 0
     
     public DcMotor wobbleArm = null; //Expansion Hub: Port 1
 
     public Servo wobbleServo = null; //Control Hub: Port 2
+    public Servo wobbleLockServo = null; //Control Hub: Port 1
+    public Servo collectionLockServo = null; //Control Hub: Port 0
     public Servo horizontalTurret = null; //Control Hub: Port 5
     public Servo verticalTurret = null; //Control Hub: Port 3
     public Servo launcherServo = null; // Control Hub: Port 4
@@ -117,12 +122,16 @@ public class HardwareConfig
         rightFrontDrive = hwMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive  = hwMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hwMap.get(DcMotor.class, "rightBackDrive");
+        conveyorMotor = hwMap.get(DcMotor.class, "conveyorMotor");
+        collectionMotor = hwMap.get(DcMotor.class, "collectionMotor");
         DiscLauncher = hwMap.get(DcMotor.class, "discLauncher");
         wobbleArm = hwMap.get(DcMotor.class, "wobbleArm");
         wobbleServo = hwMap.get(Servo.class, "wobbleServo");
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
         verticalTurret = hwMap.get(Servo.class, "verticalTurret");
         launcherServo = hwMap.get(Servo.class, "launcherServo");
+        wobbleLockServo = hwMap.get(Servo.class, "wobbleLockServo");
+        collectionLockServo = hwMap.get(Servo.class, "collectionLockServo");
         colorSensor = hwMap.get(ColorSensor.class, "colorSensor");
 
         imu = hwMap.get(BNO055IMU.class, "imu");
@@ -145,6 +154,8 @@ public class HardwareConfig
         rightBackDrive.setPower(0);
         DiscLauncher.setPower(0);
         wobbleArm.setPower(0);
+        conveyorMotor.setPower(0);
+        collectionMotor.setPower(0);
 //        leftArm.setPower(0);
 
         // Set all motors to run without encoders.

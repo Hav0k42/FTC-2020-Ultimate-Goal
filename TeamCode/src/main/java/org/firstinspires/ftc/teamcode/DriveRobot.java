@@ -340,6 +340,8 @@ public class DriveRobot extends OpMode {
 
     float triangleAngleZ = (float)Math.asin(triangleSideA / triangleSideC);
     double launcherServoPosition = 0.4;
+    double conveyorMotorPower = 0;
+    double collectionMotorPower = 0;
 
     int toggleWobbleFlag = 0;
     int toggleWobbleTimerFlag = 0;
@@ -435,6 +437,8 @@ public class DriveRobot extends OpMode {
             DiscLauncherPower = 0.5;
         }
 
+
+
         if (gamepad1.b && activeTarget.equals("Red Tower Goal Target")) {
             double angleToFireFrom = calculateAngle(zAxisValue, 10);
             runtime.reset();
@@ -466,9 +470,9 @@ public class DriveRobot extends OpMode {
                     toggleWobbleTimerFlag = 1;
                 }
                 if (timer.seconds() > 1 && timer.seconds() < 2) {
-                    wobbleArmPower = 0.2;
+                    wobbleArmPower = 0.35;
                 } else {
-                    wobbleArmPower = 0;
+                    wobbleArmPower = -0.2;
                 }
                 if (timer.seconds() > 2 && toggleWobbleTimerFlag == 1) {
                     toggleWobbleFlag = 1;
@@ -481,7 +485,7 @@ public class DriveRobot extends OpMode {
                     toggleWobbleTimerFlag = 1;
                 }
                 if (timer.seconds() > 0 && timer.seconds() < 1) {
-                    wobbleArmPower = -0.2;
+                    wobbleArmPower = -0.35;
                 } else {
                     wobbleArmPower = 0;
                     wobbleServoPos = 1;
@@ -497,6 +501,16 @@ public class DriveRobot extends OpMode {
         if (!gamepad1.x && toggleWobbleFlag == 1) {
             toggleWobbleFlag = 0;
         }
+
+
+        if (gamepad1.y) {
+            conveyorMotorPower = 1;
+            collectionMotorPower = 1;
+        } else {
+            conveyorMotorPower = 0;
+            collectionMotorPower = 0;
+        }
+
 
         if (true) {
             if (verticalTurretDirection == 0) {
@@ -582,6 +596,8 @@ public class DriveRobot extends OpMode {
         robot.rightBackDrive.setPower(rightBackPower * driveSpeed);
         robot.DiscLauncher.setPower(DiscLauncherPower);
         robot.wobbleArm.setPower(wobbleArmPower);
+        robot.conveyorMotor.setPower(conveyorMotorPower);
+        robot.collectionMotor.setPower(collectionMotorPower);
 
         robot.wobbleServo.setPosition(wobbleServoPos);
         robot.verticalTurret.setPosition(verticalTurretPos);
@@ -595,6 +611,8 @@ public class DriveRobot extends OpMode {
         telemetry.addData("Drive Speed", driveSpeed);
         telemetry.addData("Disc Launcher Speed", DiscLauncherPower);
         telemetry.addData("Wobble Arm", wobbleArmPower);
+        telemetry.addData("Conveyor Motor", conveyorMotorPower);
+        telemetry.addData("Collection Motor", collectionMotorPower);
         telemetry.addData("\nServos:\nHorizontal Servo Position", currentServoPos);
         telemetry.addData("Vertical Servo Position", verticalTurretPos);
         telemetry.addData("Launcher Servo Position", launcherServoPosition);
