@@ -76,6 +76,9 @@ public class RedAutonomousRight extends LinearOpMode
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
+    static final double lowerRingThreshold = 132;
+    static final double higherRingThreshold = 140;
+
     OpenCvCamera webCam;
     SkystoneDeterminationPipeline pipeline;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -188,12 +191,15 @@ public class RedAutonomousRight extends LinearOpMode
         int autonomousStep = 0;
         int preAutoStep = 0;
         while (opModeIsActive() && preAutoStep != 2) {
+            robot.wobbleArm.setPower(-0.3);
+            robot.wobbleLockServo.setPosition(0);
             if (preAutoStep == 0) {
                 turretServoPosition = 0.45;
                 preAutoStep = 1;
                 runtime.reset();
             }
             if (preAutoStep == 1) {
+
                 pos = pipeline.position.toString();
                 analysis = pipeline.getAnalysis();
                 if (analysis > 110) {
@@ -382,15 +388,16 @@ public class RedAutonomousRight extends LinearOpMode
 
 
             if (autonomousStep == 0) {//Drive to the middle of the goals
-                if (analysis < 125) {
-                    encoderDrive(0.75, -10.5, -10.5, -10.5, -10.5, 10);
+                robot.wobbleArm.setPower(-0.2);
+                if (analysis < lowerRingThreshold) {
+                    encoderDrive(0.75, -12, -12, -12, -12, 10);
                 } else {
                     encoderDrive(0.75, -19, -19, -19, -19, 10);
                 }
                 autonomousStep = 1;
             }//Drive to the middle of the goals
             
-            if (analysis > 131) {//Furthest Square *Target C
+            if (analysis > 150) {//Furthest Square *Target C
                 pos = "FOUR";
                 if (autonomousStep == 1) {
                     encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
@@ -404,6 +411,7 @@ public class RedAutonomousRight extends LinearOpMode
                         robot.wobbleArm.setPower(0.2);
                     }
                         robot.wobbleArm.setPower(0);
+                    robot.wobbleLockServo.setPosition(1);
 
                     runtime.reset();
                     while (runtime.seconds() < 0.3 ) {}
@@ -419,10 +427,10 @@ public class RedAutonomousRight extends LinearOpMode
 
                     autonomousStep = 2;
                 }
-            } else if (analysis < 131 && analysis > 125) {//Middle Square *Target B
+            } else if (analysis < higherRingThreshold && analysis > lowerRingThreshold) {//Middle Square *Target B
                 pos = "ONE";
                 if (autonomousStep == 1) {
-
+                    encoderDrive(0.5, 6.6, 6.6, -6.6, -6.6, 10);
 
                     robot.wobbleServo.setPosition(0);
                     runtime.reset();
@@ -431,7 +439,7 @@ public class RedAutonomousRight extends LinearOpMode
                         robot.wobbleArm.setPower(0.2);
                     }
                     robot.wobbleArm.setPower(0);
-
+                    robot.wobbleLockServo.setPosition(1);
 
                     runtime.reset();
                     while (runtime.seconds() < 0.3 ) {}
@@ -444,6 +452,8 @@ public class RedAutonomousRight extends LinearOpMode
                     robot.wobbleArm.setPower(0);
                     robot.wobbleServo.setPosition(1);
 
+
+                    encoderDrive(0.5, -6.6, -6.6, 6.6, 6.6, 10);
                     autonomousStep = 2;
                 }
             } else {//Closest Square *Target A
@@ -460,7 +470,7 @@ public class RedAutonomousRight extends LinearOpMode
                         robot.wobbleArm.setPower(0.2);
                     }
                     robot.wobbleArm.setPower(0);
-
+                    robot.wobbleLockServo.setPosition(1);
 
                     runtime.reset();
                     while (runtime.seconds() < 0.3 ) {}
@@ -480,7 +490,7 @@ public class RedAutonomousRight extends LinearOpMode
             }
 
             if (autonomousStep == 2 ) {//Drive behind the line, and shoot off 3 rings.
-                if (analysis >= 125) {
+                if (analysis >= lowerRingThreshold) {
                     encoderDrive(0.75, 10, 10, 10, 10, 10);
                 }
                 double angleToFireFrom = calculateAngle(zAxisValue, 10);
@@ -512,7 +522,7 @@ public class RedAutonomousRight extends LinearOpMode
 
                 robot.DiscLauncher.setPower(0);
 
-                if (analysis < 125) {
+                if (analysis < lowerRingThreshold) {
                     robot.leftBackDrive.setPower(-0.5);
                     robot.leftFrontDrive.setPower(0.5);
                     robot.rightBackDrive.setPower(0.5);
