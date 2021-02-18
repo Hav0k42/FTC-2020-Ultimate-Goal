@@ -1,0 +1,16 @@
+Controller 1:
+    Left Joystick both X and Y
+    Right Joystick X
+    Right Trigger
+    a
+    b
+    x
+    y
+
+    Available:
+        Right Joystick Y
+        R3 (Joystick Button)
+        L3 (Joystick Button)
+        Entire Dpad
+        Left Trigger
+        Left and Right Bumpers
