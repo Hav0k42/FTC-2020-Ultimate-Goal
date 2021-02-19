@@ -400,6 +400,13 @@ public class RedAutonomousRight extends LinearOpMode
                     encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
 
 
+
+
+
+
+
+                    //scuttle to the side a bit
+                    encoderDrive(0.5, 0.5, -0.5, -0.5, 0.5, 10);
                     runtime.reset();
                     robot.wobbleArm.setPower(0.35);
                     while (runtime.seconds() < 0.7) {}
@@ -408,14 +415,19 @@ public class RedAutonomousRight extends LinearOpMode
                     runtime.reset();
                     while (runtime.seconds() < 0.2) {}
 
-                    //scuttle away
-                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
+                    //scuttle back
+                    encoderDrive(0.5, -0.5, 0.5, 0.5, -0.5, 10);
                     robot.wobbleLockServo.setPosition(0);
                     runtime.reset();
                     while (runtime.seconds() < 0.2) {}
                     robot.wobbleArm.setPower(-0.6);
                     runtime.reset();
                     while (runtime.seconds() < 1) {}
+
+
+
+
+
 
 
 
@@ -430,7 +442,33 @@ public class RedAutonomousRight extends LinearOpMode
                     encoderDrive(0.5, 6.6, 6.6, -6.6, -6.6, 10);
 
 
-                    //deliver wobble goal
+
+
+
+                    //scuttle to the side a bit
+                    encoderDrive(0.5, 0.5, -0.5, -0.5, 0.5, 10);
+                    runtime.reset();
+                    robot.wobbleArm.setPower(0.35);
+                    while (runtime.seconds() < 0.7) {}
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleLockServo.setPosition(1);
+                    runtime.reset();
+                    while (runtime.seconds() < 0.2) {}
+
+                    //scuttle back
+                    encoderDrive(0.5, -0.5, 0.5, 0.5, -0.5, 10);
+                    robot.wobbleLockServo.setPosition(0);
+                    runtime.reset();
+                    while (runtime.seconds() < 0.2) {}
+                    robot.wobbleArm.setPower(-0.6);
+                    runtime.reset();
+                    while (runtime.seconds() < 1) {}
+
+
+
+
+
+
 
 
                     encoderDrive(0.5, -6.6, -6.6, 6.6, 6.6, 10);
@@ -442,7 +480,35 @@ public class RedAutonomousRight extends LinearOpMode
                     encoderDrive(0.5, -9.9, -9.9, 9.9, 9.9, 10);
 
 
-                    //deliver wobble goal
+
+
+
+
+
+                    //scuttle to the side a bit
+                    encoderDrive(0.5, 0.5, -0.5, -0.5, 0.5, 10);
+                    runtime.reset();
+                    robot.wobbleArm.setPower(0.35);
+                    while (runtime.seconds() < 0.7) {}
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleLockServo.setPosition(1);
+                    runtime.reset();
+                    while (runtime.seconds() < 0.2) {}
+
+                    //scuttle back
+                    encoderDrive(0.5, -0.5, 0.5, 0.5, -0.5, 10);
+                    robot.wobbleLockServo.setPosition(0);
+                    runtime.reset();
+                    while (runtime.seconds() < 0.2) {}
+                    robot.wobbleArm.setPower(-0.6);
+                    runtime.reset();
+                    while (runtime.seconds() < 1) {}
+
+
+
+
+
+
 
 
                     encoderDrive(0.5, 9.9, 9.9, -9.9, -9.9, 10);
