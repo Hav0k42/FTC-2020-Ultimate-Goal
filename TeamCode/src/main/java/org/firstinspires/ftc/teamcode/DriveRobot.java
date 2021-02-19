@@ -342,11 +342,11 @@ public class DriveRobot extends OpMode {
     double launcherServoPosition = 0.4;
     double conveyorMotorPower = 0;
     double collectionMotorPower = 0;
+    double wobbleLockServoPos = 0;
 
     int toggleWobbleFlag = 0;
     int toggleWobbleTimerFlag = 0;
     int wobblePos = 0;
-    double wobbleServoPos = 1;
     int verticalTurretPos = 0;
     int verticalTurretDirection = 0;
 
@@ -464,33 +464,37 @@ public class DriveRobot extends OpMode {
 
         if (gamepad1.x && toggleWobbleFlag == 0) {
             if (wobblePos == 0) {
-                wobbleServoPos = 0;
+
                 if (toggleWobbleTimerFlag == 0) {
                     timer.reset();
                     toggleWobbleTimerFlag = 1;
                 }
-                if (timer.seconds() > 1 && timer.seconds() < 2) {
+                if (timer.seconds() > 0 && timer.seconds() < 0.7) {
                     wobbleArmPower = 0.35;
                 } else {
-                    wobbleArmPower = -0.2;
+                    wobbleArmPower = 0;
                 }
-                if (timer.seconds() > 2 && toggleWobbleTimerFlag == 1) {
+
+                if (timer.seconds() > 0.7 && toggleWobbleTimerFlag == 1) {
+                    wobbleLockServoPos = 1;
                     toggleWobbleFlag = 1;
                     wobblePos = 1;
                     toggleWobbleTimerFlag = 0;
                 }
+
+
             } else if (wobblePos == 1) {
                 if (toggleWobbleTimerFlag == 0) {
+                    wobbleLockServoPos = 0;
                     timer.reset();
                     toggleWobbleTimerFlag = 1;
                 }
-                if (timer.seconds() > 0 && timer.seconds() < 1) {
-                    wobbleArmPower = -0.35;
+                if (timer.seconds() > 0.5 && timer.seconds() < 1.5) {
+                    wobbleArmPower = -0.6;
                 } else {
                     wobbleArmPower = 0;
-                    wobbleServoPos = 1;
                 }
-                if (timer.seconds() > 2 && toggleWobbleTimerFlag == 1) {
+                if (timer.seconds() > 1.2 && toggleWobbleTimerFlag == 1) {
                     toggleWobbleFlag = 1;
                     wobblePos = 0;
                     toggleWobbleTimerFlag = 0;
@@ -599,10 +603,10 @@ public class DriveRobot extends OpMode {
         robot.conveyorMotor.setPower(conveyorMotorPower);
         robot.collectionMotor.setPower(collectionMotorPower);
 
-        robot.wobbleServo.setPosition(wobbleServoPos);
         robot.verticalTurret.setPosition(verticalTurretPos);
         robot.horizontalTurret.setPosition(currentServoPos);
         robot.launcherServo.setPosition(launcherServoPosition);
+        robot.wobbleLockServo.setPosition(wobbleLockServoPos);
 
         telemetry.addData("\nMotors:\nLeft Front Power",leftFrontPower * driveSpeed);
         telemetry.addData("Right Front Power",rightFrontPower * driveSpeed);
@@ -616,7 +620,7 @@ public class DriveRobot extends OpMode {
         telemetry.addData("\nServos:\nHorizontal Servo Position", currentServoPos);
         telemetry.addData("Vertical Servo Position", verticalTurretPos);
         telemetry.addData("Launcher Servo Position", launcherServoPosition);
-        telemetry.addData("Wobble Arm Servo Posiiton", wobbleServoPos);
+        telemetry.addData("Wobble Lock Servo Position", wobbleLockServoPos);
         telemetry.addData("\nColor Data\nRed", robot.colorSensor.red());
         telemetry.addData("Green", robot.colorSensor.green());
         telemetry.addData("Blue", robot.colorSensor.blue());

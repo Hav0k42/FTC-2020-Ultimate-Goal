@@ -73,7 +73,7 @@ public class HardwareConfig
     
     public DcMotor wobbleArm = null; //Expansion Hub: Port 1
 
-    public Servo wobbleServo = null; //Control Hub: Port 2
+
     public Servo wobbleLockServo = null; //Control Hub: Port 1
     public Servo collectionLockServo = null; //Control Hub: Port 0
     public Servo horizontalTurret = null; //Control Hub: Port 5
@@ -126,7 +126,6 @@ public class HardwareConfig
         collectionMotor = hwMap.get(DcMotor.class, "collectionMotor");
         DiscLauncher = hwMap.get(DcMotor.class, "discLauncher");
         wobbleArm = hwMap.get(DcMotor.class, "wobbleArm");
-        wobbleServo = hwMap.get(Servo.class, "wobbleServo");
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
         verticalTurret = hwMap.get(Servo.class, "verticalTurret");
         launcherServo = hwMap.get(Servo.class, "launcherServo");
