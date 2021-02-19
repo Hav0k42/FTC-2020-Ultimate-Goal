@@ -161,7 +161,7 @@ public class DriveRobot extends OpMode {
         telemetry.addData("Drive Speed", driveSpeed);
         telemetry.addData("Disc Launcher Speed", leftDiscLauncherPower);
         telemetry.addData("Right Launcher Speed", rightDiscLauncherPower);
-        telemetry.addData("\nServos:\nHorizontalServoPos", currentServoPos);
+        telemetry.addData("Servos:HorizontalServoPos", currentServoPos);
 
 
     }
