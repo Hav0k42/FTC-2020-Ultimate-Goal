@@ -28,7 +28,11 @@
  */
 
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -42,24 +46,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.Thread.sleep;
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.INTRINSIC;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
@@ -81,8 +67,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Drive Robot", group="Opmode")
-public class DriveRobot extends OpMode {
+@TeleOp(name="Calibrate Camera", group="Opmode")
+public class CalibrateCamera extends OpMode {
 
 
 
@@ -140,7 +126,6 @@ public class DriveRobot extends OpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private ElapsedTime timer = new ElapsedTime();
     HardwareConfig robot = new HardwareConfig();
     double initialDiscVelocity = 20.0; //speed of the disc cannon in meters per second.
     double cannonRadius = 0.2; //radius of the cannon in meters.
@@ -224,24 +209,24 @@ public class DriveRobot extends OpMode {
          */
 
         //Set the position of the perimeter targets with relation to origin (center of field)
-//        redAllianceTarget.setLocation(OpenGLMatrix
-//                .translation(0, -halfField, mmTargetHeight)
-//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-//
-//        blueAllianceTarget.setLocation(OpenGLMatrix
-//                .translation(0, halfField, mmTargetHeight)
-//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
-//        frontWallTarget.setLocation(OpenGLMatrix
-//                .translation(-halfField, 0, mmTargetHeight)
-//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90)));
-//
-//        // The tower goal targets are located a quarter field length from the ends of the back perimeter wall.
-//        blueTowerGoalTarget.setLocation(OpenGLMatrix
-//                .translation(halfField, quadField, mmTargetHeight)
-//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , -90)));
-//        redTowerGoalTarget.setLocation(OpenGLMatrix
-//                .translation(halfField, -quadField, mmTargetHeight)
-//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+        redAllianceTarget.setLocation(OpenGLMatrix
+                .translation(0, -halfField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
+
+        blueAllianceTarget.setLocation(OpenGLMatrix
+                .translation(0, halfField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
+        frontWallTarget.setLocation(OpenGLMatrix
+                .translation(-halfField, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90)));
+
+        // The tower goal targets are located a quarter field length from the ends of the back perimeter wall.
+        blueTowerGoalTarget.setLocation(OpenGLMatrix
+                .translation(halfField, quadField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , -90)));
+        redTowerGoalTarget.setLocation(OpenGLMatrix
+                .translation(halfField, -quadField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
         //
         // Create a transformation matrix describing where the phone is on the robot.
@@ -318,310 +303,18 @@ public class DriveRobot extends OpMode {
     @Override
     public void start() {
         runtime.reset();
-        timer.reset();
     }
-
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    double yAxisValue = 0;
-    double zAxisValue = 0;
-    float centeredValue;
-    int horizontalServoSearchDirection = 0;//0: left, 1: right
-    double lastOrientation = 0;
-
-    double currentServoPos = 0 ;
-
-
-    //the following variable names will require references to the diagram drawn with the associated calculations.
-    float triangleSideA = 35.5f;
-    float triangleSideB = 70.5f;
-    float triangleSideC = (float)Math.sqrt(Math.pow(triangleSideA, 2) + Math.pow(triangleSideB, 2));
-
-    float triangleAngleZ = (float)Math.asin(triangleSideA / triangleSideC);
-    double launcherServoPosition = 0.4;
-    double conveyorMotorPower = 0;
-    double collectionMotorPower = 0;
-
-    int toggleWobbleFlag = 0;
-    int toggleWobbleTimerFlag = 0;
-    int wobblePos = 0;
-    double wobbleServoPos = 1;
-    int verticalTurretPos = 0;
-    int verticalTurretDirection = 0;
-
 
     @Override
     public void loop() {
-        // Setup a variable for each drive wheel to save power level for telemetry
 
-
-        String activeTarget = "";
-        targetVisible = false;
-
-        for (VuforiaTrackable trackable : allTrackables) {
-            if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                telemetry.addData("Visible Target", trackable.getName());
-                targetVisible = true;
-                activeTarget = trackable.getName();
-
-                // getUpdatedRobotLocation() will return null if no new information is available since
-                // the last time that call was made, or if the trackable is not currently visible.
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform;
-
-                }
-                break;
-            }
-        }
-
-        // Provide feedback as to where the robot is located (if we know).
-        if (targetVisible) {
-            // express position (translation) of robot in inches.
-            VectorF translation = lastLocation.getTranslation();
-            telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);//Z-axis: vertical, Y-axis: Perpendicular Distance, X-axis: Parallel Distance
-            yAxisValue = translation.get(1) / mmPerInch;
-            zAxisValue = translation.get(0) / mmPerInch;
-            // express the rotation of the robot in degrees.
-            Orientation rotation = Orientation.getOrientation(lastLocation, INTRINSIC, XYZ, DEGREES);
-            telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-            centeredValue = rotation.secondAngle;
-            centeredValue += 180f;
-            if (centeredValue > 180) {
-                centeredValue -= 360;
-            }
-
-
-        }
-        else {
-            telemetry.addData("Visible Target", "none");
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-        double leftFrontPower = 0;
-        double rightFrontPower = 0;
-        double leftBackPower = 0;
-        double rightBackPower = 0;
         double DiscLauncherPower = 0;
-        double rightDiscLauncherPower = 0;
-        double wobbleArmPower = 0;
-
-        leftFrontPower = -Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
-        rightFrontPower = -Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
-        leftBackPower = -Range.clip(gamepad1.left_stick_y + gamepad1.left_stick_x - (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
-        rightBackPower = -Range.clip(gamepad1.left_stick_y - gamepad1.left_stick_x + (gamepad1.right_stick_x * 0.75), -1.0, 1.0);
-
-
-        if(gamepad1.right_trigger > 0) {
-            driveSpeed = 1 - gamepad1.right_trigger;
-            if(driveSpeed < 0.3) {
-                driveSpeed = 0.3;
-            }
-        }
-            
 
         if(gamepad1.a) {
-            DiscLauncherPower = 0.5;
+            DiscLauncherPower = 0.50;
         }
-
-
-
-        if (gamepad1.b && activeTarget.equals("Red Tower Goal Target")) {
-            double angleToFireFrom = calculateAngle(zAxisValue, 10);
-            runtime.reset();
-            robot.DiscLauncher.setPower(0.5);
-            while (runtime.seconds() < 3) {
-
-            }
-
-            runtime.reset();
-            while (runtime.seconds() < 0.2) {
-
-            }
-            launcherServoPosition = 1;
-            robot.launcherServo.setPosition((launcherServoPosition));
-            runtime.reset();
-            while (runtime.seconds() < 1) {
-
-            }
-            launcherServoPosition = 0.4;
-            robot.launcherServo.setPosition((launcherServoPosition));
-            robot.DiscLauncher.setPower(0);
-        }
-
-        if (gamepad1.x && toggleWobbleFlag == 0) {
-            if (wobblePos == 0) {
-                wobbleServoPos = 0;
-                if (toggleWobbleTimerFlag == 0) {
-                    timer.reset();
-                    toggleWobbleTimerFlag = 1;
-                }
-                if (timer.seconds() > 1 && timer.seconds() < 2) {
-                    wobbleArmPower = 0.35;
-                } else {
-                    wobbleArmPower = -0.2;
-                }
-                if (timer.seconds() > 2 && toggleWobbleTimerFlag == 1) {
-                    toggleWobbleFlag = 1;
-                    wobblePos = 1;
-                    toggleWobbleTimerFlag = 0;
-                }
-            } else if (wobblePos == 1) {
-                if (toggleWobbleTimerFlag == 0) {
-                    timer.reset();
-                    toggleWobbleTimerFlag = 1;
-                }
-                if (timer.seconds() > 0 && timer.seconds() < 1) {
-                    wobbleArmPower = -0.35;
-                } else {
-                    wobbleArmPower = 0;
-                    wobbleServoPos = 1;
-                }
-                if (timer.seconds() > 2 && toggleWobbleTimerFlag == 1) {
-                    toggleWobbleFlag = 1;
-                    wobblePos = 0;
-                    toggleWobbleTimerFlag = 0;
-                }
-            }
-        }
-
-        if (!gamepad1.x && toggleWobbleFlag == 1) {
-            toggleWobbleFlag = 0;
-        }
-
-
-        if (gamepad1.y) {
-            conveyorMotorPower = 1;
-            collectionMotorPower = 1;
-        } else {
-            conveyorMotorPower = 0;
-            collectionMotorPower = 0;
-        }
-
-
-        if (true) {
-            if (verticalTurretDirection == 0) {
-                verticalTurretPos += 0.05;
-            }
-            if (verticalTurretDirection == 1) {
-                verticalTurretPos -= 0.05;
-            }
-            if (verticalTurretPos <= 0) {
-                verticalTurretPos = 0;
-                verticalTurretDirection = 0;
-            }
-            if (verticalTurretPos >= 1) {
-                verticalTurretPos = 1;
-                verticalTurretDirection = 1;
-            }
-        }
-
-
-
-        if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
-            float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
-//            if (Math.abs(centeredValue) < targetCloseThreshold) {
-//                //robot is aimed at the right spot, or at least close enough. Do nothing.
-//            } else
-            if (centeredValue > targetCloseThreshold) {
-                //robot turret needs to turn right.
-                horizontalServoSearchDirection = 0;
-                currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
-            } else if (centeredValue < 0 - targetCloseThreshold) {
-                //robot turret needs to turn left.
-                horizontalServoSearchDirection = 1;
-                currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
-            }
-
-            lastOrientation = robot.imu.getAngularOrientation().thirdAngle;//
-            telemetry.addData("Angle Rotation", lastOrientation);
-
-        } else if (targetVisible && activeTarget.equals("Red Alliance Target")) {
-            float triangleAngleX = centeredValue;//this angle is going to need to gotten from the vuforia stuff. Testing required to find out if its one of the ones provided, or if I need to do calculations for it.
-            float triangleSideD = (float)zAxisValue;//same with this side, except I know I don't need to do extra calculations.
-
-
-            float triangleAngleW = (float)(Math.PI - (triangleAngleZ + triangleAngleX));
-            float triangleSideE = (float)(Math.sqrt(Math.pow(triangleSideC, 2) + Math.pow(triangleSideD, 2)  - (2 * triangleSideC * triangleSideD * Math.cos(triangleAngleW))));
-            float triangleAngleV = (float)(Math.acos(-((Math.pow(triangleSideC, 2) - Math.pow(triangleSideE, 2) - Math.pow(triangleSideD, 2)) - (2 * triangleSideE * triangleSideD))));
-
-            float angleToTurn = (float)(triangleAngleV / Math.PI);
-
-            if (!Double.isNaN(angleToTurn)) {//make sure the value isn't imaginary.
-                currentServoPos -= angleToTurn;
-            }
-            if (currentServoPos > 1) {
-                currentServoPos = 1;
-            }
-            if (currentServoPos < 0) {
-                currentServoPos = 0;
-            }
-            horizontalServoSearchDirection = 1;
-        } else if (!targetVisible) {//Robot cannot see any targets.
-            if (horizontalServoSearchDirection == 0) {
-                currentServoPos += 0.0001;
-            }
-            if (horizontalServoSearchDirection == 1) {
-                currentServoPos -= 0.0001;
-            }
-            if (currentServoPos <= 0) {
-                currentServoPos = 0;
-                horizontalServoSearchDirection = 0;
-            }
-            if (currentServoPos >= 1) {
-                currentServoPos = 1;
-                horizontalServoSearchDirection = 1;
-            }
-        }//scan surroundings until correct target is found
-
-
-
-
-        robot.leftFrontDrive.setPower(leftFrontPower * driveSpeed);
-        robot.rightFrontDrive.setPower(rightFrontPower * driveSpeed);
-        robot.leftBackDrive.setPower(leftBackPower * driveSpeed);
-        robot.rightBackDrive.setPower(rightBackPower * driveSpeed);
         robot.DiscLauncher.setPower(DiscLauncherPower);
-        robot.wobbleArm.setPower(wobbleArmPower);
-        robot.conveyorMotor.setPower(conveyorMotorPower);
-        robot.collectionMotor.setPower(collectionMotorPower);
-
-        robot.wobbleServo.setPosition(wobbleServoPos);
-        robot.verticalTurret.setPosition(verticalTurretPos);
-        robot.horizontalTurret.setPosition(currentServoPos);
-        robot.launcherServo.setPosition(launcherServoPosition);
-
-        telemetry.addData("\nMotors:\nLeft Front Power",leftFrontPower * driveSpeed);
-        telemetry.addData("Right Front Power",rightFrontPower * driveSpeed);
-        telemetry.addData("Left Back Power",leftBackPower * driveSpeed);
-        telemetry.addData("Right Back Power",rightBackPower * driveSpeed);
-        telemetry.addData("Drive Speed", driveSpeed);
         telemetry.addData("Disc Launcher Speed", DiscLauncherPower);
-        telemetry.addData("Wobble Arm", wobbleArmPower);
-        telemetry.addData("Conveyor Motor", conveyorMotorPower);
-        telemetry.addData("Collection Motor", collectionMotorPower);
-        telemetry.addData("\nServos:\nHorizontal Servo Position", currentServoPos);
-        telemetry.addData("Vertical Servo Position", verticalTurretPos);
-        telemetry.addData("Launcher Servo Position", launcherServoPosition);
-        telemetry.addData("Wobble Arm Servo Posiiton", wobbleServoPos);
-        telemetry.addData("\nColor Data\nRed", robot.colorSensor.red());
-        telemetry.addData("Green", robot.colorSensor.green());
-        telemetry.addData("Blue", robot.colorSensor.blue());
-
-
     }
 
     /*

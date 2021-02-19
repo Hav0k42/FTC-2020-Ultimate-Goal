@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 /**
@@ -60,22 +61,36 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 public class HardwareConfig
 {
     /* Public OpMode members. */
-    public DcMotor  leftFrontDrive   = null; //Control Hub: Port 0
-    public DcMotor  rightFrontDrive  = null; //Expansion Hub: Port 1
-    public DcMotor  leftBackDrive   = null; //Control Hub: Port 1
-    public DcMotor  rightBackDrive  = null; //Expansion Hub: Port 0
+    public DcMotor  leftFrontDrive   = null; //Control Hub: Port 1
+    public DcMotor  rightFrontDrive  = null; //Control Hub: Port 2
+    public DcMotor  leftBackDrive   = null; //Control Hub: Port 3
+    public DcMotor  rightBackDrive  = null; //Control Hub: Port 0
 
-    public DcMotor leftDiscLauncher = null; //Expansion Hub: Port 2
-    public DcMotor rightDiscLauncher = null; //Control Hub: Port 2
+    public DcMotor  conveyorMotor = null; //Expansion Hub: Port 2
+    public DcMotor  collectionMotor = null; //Expansion Hub: Port 3
 
-    public Servo horizontalTurret = null; //Control Hub: Port 0
-    public Servo verticalTurret = null; //Control Hub: Port 1
+    public DcMotor DiscLauncher = null; //Expansion Hub: Port 0
+    
+    public DcMotor wobbleArm = null; //Expansion Hub: Port 1
+
+    public Servo wobbleServo = null; //Control Hub: Port 2
+    public Servo wobbleLockServo = null; //Control Hub: Port 1
+    public Servo collectionLockServo = null; //Control Hub: Port 0
+    public Servo horizontalTurret = null; //Control Hub: Port 5
+    public Servo verticalTurret = null; //Control Hub: Port 3
+    public Servo launcherServo = null; // Control Hub: Port 4
+
+    public ColorSensor colorSensor = null;//Expansion Hub: I2C Bus 0
 
     public WebcamName camera = null; // Control Hub
     BNO055IMU imu;
 //    public DcMotor  leftArm     = null;
 //    public Servo    leftClaw    = null;
 //    public Servo    rightClaw   = null;
+
+    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+
 
     public static final double MID_SERVO       =  0.5 ;
     public static final double SERVO_HOME    =  0.1;
@@ -87,7 +102,14 @@ public class HardwareConfig
 
     /* Constructor */
     public HardwareConfig(){
+        parameters.mode                = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled      = false;
 
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
     }
 
     /* Initialize standard Hardware interfaces */
@@ -100,10 +122,20 @@ public class HardwareConfig
         rightFrontDrive = hwMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive  = hwMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hwMap.get(DcMotor.class, "rightBackDrive");
-        leftDiscLauncher = hwMap.get(DcMotor.class, "leftDiscLauncher");
-        rightDiscLauncher = hwMap.get(DcMotor.class, "rightDiscLauncher");
+        conveyorMotor = hwMap.get(DcMotor.class, "conveyorMotor");
+        collectionMotor = hwMap.get(DcMotor.class, "collectionMotor");
+        DiscLauncher = hwMap.get(DcMotor.class, "discLauncher");
+        wobbleArm = hwMap.get(DcMotor.class, "wobbleArm");
+        wobbleServo = hwMap.get(Servo.class, "wobbleServo");
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
         verticalTurret = hwMap.get(Servo.class, "verticalTurret");
+        launcherServo = hwMap.get(Servo.class, "launcherServo");
+        wobbleLockServo = hwMap.get(Servo.class, "wobbleLockServo");
+        collectionLockServo = hwMap.get(Servo.class, "collectionLockServo");
+        colorSensor = hwMap.get(ColorSensor.class, "colorSensor");
+
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
 
         camera = hwMap.get(WebcamName.class, "cam");
 
@@ -112,17 +144,18 @@ public class HardwareConfig
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        leftDiscLauncher.setDirection(DcMotor.Direction.REVERSE);
-        rightDiscLauncher.setDirection(DcMotor.Direction.FORWARD);
-
+        DiscLauncher.setDirection(DcMotor.Direction.REVERSE);
+        wobbleArm.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
         leftFrontDrive.setPower(0);
         rightFrontDrive.setPower(0);
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
-        leftDiscLauncher.setPower(0);
-        rightDiscLauncher.setPower(0);
+        DiscLauncher.setPower(0);
+        wobbleArm.setPower(0);
+        conveyorMotor.setPower(0);
+        collectionMotor.setPower(0);
 //        leftArm.setPower(0);
 
         // Set all motors to run without encoders.
@@ -131,8 +164,8 @@ public class HardwareConfig
         rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftDiscLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDiscLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DiscLauncher.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        wobbleArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        leftArm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define and initialize ALL installed servos.

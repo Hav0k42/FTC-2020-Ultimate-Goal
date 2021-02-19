@@ -48,6 +48,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.lang.ref.PhantomReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +75,9 @@ public class RedAutonomousRight extends LinearOpMode
                                                       (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
+
+    static final double lowerRingThreshold = 132;
+    static final double higherRingThreshold = 140;
 
     OpenCvCamera webCam;
     SkystoneDeterminationPipeline pipeline;
@@ -121,25 +125,107 @@ public class RedAutonomousRight extends LinearOpMode
             // out when the RC activity is in portrait. We do our actual image processing assuming
             // landscape orientation, though.
 
-            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener(){
+            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
                 @Override
                 public void onOpened() {
-        
+                    webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
                 }
             });
             
-            pos = pipeline.position.toString();
+
         
-            webCam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener(){
-                @Override
-                public void onClose() {
-        
-                }
-            });
+
             
             
         webcamName = hardwareMap.get(WebcamName.class, "cam");
+
+        // WARNING:
+        // In this sample, we do not wait for PLAY to be pressed.  Target Tracking is started immediately when INIT is pressed.
+        // This sequence is used to enable the new remote DS Camera Preview feature to be used with this sample.
+        // CONSEQUENTLY do not put any driving commands in this loop.
+        // To restore the normal opmode structure, just un-comment the following line:
+
+        // waitForStart();
+
+        // Note: To use the remote camera preview:
+        // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
+        // Tap the preview window to receive a fresh image.
+
+
+
+
+
         
+        
+        robot.init(hardwareMap);
+
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Resetting Encoders");    //
+        telemetry.update();
+
+        robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Send telemetry message to indicate successful Encoder reset
+        telemetry.addData("Path0",  "Starting at %7d :%7d",
+                          robot.leftFrontDrive.getCurrentPosition(),
+                          robot.leftBackDrive.getCurrentPosition(),
+                          robot.rightFrontDrive.getCurrentPosition(),
+                          robot.rightBackDrive.getCurrentPosition()
+                );
+        telemetry.update();
+        
+
+        telemetry.addData("Status", "Ready to start");
+        telemetry.update();
+        
+        waitForStart();
+        double turretServoPosition = 0;
+        int autonomousStep = 0;
+        int preAutoStep = 0;
+        while (opModeIsActive() && preAutoStep != 2) {
+            robot.wobbleArm.setPower(-0.3);
+            robot.wobbleLockServo.setPosition(0);
+            if (preAutoStep == 0) {
+                turretServoPosition = 0.45;
+                preAutoStep = 1;
+                runtime.reset();
+            }
+            if (preAutoStep == 1) {
+
+                pos = pipeline.position.toString();
+                analysis = pipeline.getAnalysis();
+                if (analysis > 110) {
+                    if (runtime.seconds() > 1.5) {
+                        preAutoStep = 2;
+                    }
+
+                }
+            }
+            telemetry.addData("Analysis", pipeline.getAnalysis());
+            telemetry.addData("Position", pipeline.position.toString());
+            telemetry.update();
+            robot.horizontalTurret.setPosition(turretServoPosition);
+        }
+        
+
+
+
+
+        webCam.closeCameraDeviceAsync(new OpenCvCamera.AsyncCameraCloseListener(){
+            @Override
+            public void onClose() {
+
+            }
+        });
+
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
@@ -194,24 +280,6 @@ public class RedAutonomousRight extends LinearOpMode
          */
 
         //Set the position of the perimeter targets with relation to origin (center of field)
-        redAllianceTarget.setLocation(OpenGLMatrix
-                .translation(0, -halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
-
-        blueAllianceTarget.setLocation(OpenGLMatrix
-                .translation(0, halfField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
-        frontWallTarget.setLocation(OpenGLMatrix
-                .translation(-halfField, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90)));
-
-        // The tower goal targets are located a quarter field length from the ends of the back perimeter wall.
-        blueTowerGoalTarget.setLocation(OpenGLMatrix
-                .translation(halfField, quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , -90)));
-        redTowerGoalTarget.setLocation(OpenGLMatrix
-                .translation(halfField, -quadField, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
         //
         // Create a transformation matrix describing where the phone is on the robot.
@@ -253,60 +321,26 @@ public class RedAutonomousRight extends LinearOpMode
         for (VuforiaTrackable trackable : allTrackables) {
             ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
         }
-
-        // WARNING:
-        // In this sample, we do not wait for PLAY to be pressed.  Target Tracking is started immediately when INIT is pressed.
-        // This sequence is used to enable the new remote DS Camera Preview feature to be used with this sample.
-        // CONSEQUENTLY do not put any driving commands in this loop.
-        // To restore the normal opmode structure, just un-comment the following line:
-
-        // waitForStart();
-
-        // Note: To use the remote camera preview:
-        // AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"
-        // Tap the preview window to receive a fresh image.
-
-
-
-
-
-        
-        
-        robot.init(hardwareMap);
-
-        // Send telemetry message to signify robot waiting;
-        telemetry.addData("Status", "Resetting Encoders");    //
-        telemetry.update();
-
-        robot.leftFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightFrontDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightBackDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        robot.leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightBackDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0",  "Starting at %7d :%7d",
-                          robot.leftFrontDrive.getCurrentPosition(),
-                          robot.leftBackDrive.getCurrentPosition(),
-                          robot.rightFrontDrive.getCurrentPosition(),
-                          robot.rightBackDrive.getCurrentPosition()
-                );
-        telemetry.update();
-        
         targetsUltimateGoal.activate();
-        telemetry.addData("Status", "Ready to start");
-        telemetry.update();
-        
-        waitForStart();
-        
-        
-        int autonomousStep = 0;
+
+        double yAxisValue = 0;
+        double zAxisValue = 0;
+        float centeredValue = 0;
+        int horizontalServoSearchDirection = 0;//0: left, 1: right
+        double lastOrientation = 0;
+
+        double currentServoPos = 0 ;
+        //the following variable names will require references to the diagram drawn with the associated calculations.
+        float triangleSideA = 35.5f;
+        float triangleSideB = 70.5f;
+        float triangleSideC = (float)Math.sqrt(Math.pow(triangleSideA, 2) + Math.pow(triangleSideB, 2));
+
+        float triangleAngleZ = (float)Math.asin(triangleSideA / triangleSideC);
+        double launcherServoPosition = 0.4;
+
         while (opModeIsActive())
         {
+            String activeTarget = "";
             telemetry.addData("Analysis", analysis);
             telemetry.addData("Position", pos);
 
@@ -318,6 +352,7 @@ public class RedAutonomousRight extends LinearOpMode
                 if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
                     telemetry.addData("Visible Target", trackable.getName());
                     targetVisible = true;
+                    activeTarget = trackable.getName();
 
                     // getUpdatedRobotLocation() will return null if no new information is available since
                     // the last time that call was made, or if the trackable is not currently visible.
@@ -339,6 +374,11 @@ public class RedAutonomousRight extends LinearOpMode
                 // express the rotation of the robot in degrees.
                 Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
                 telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+                centeredValue = rotation.secondAngle;
+                centeredValue += 180f;
+                if (centeredValue > 180) {
+                    centeredValue -= 360;
+                }
             }
             else {
                 telemetry.addData("Visible Target", "none");
@@ -346,23 +386,252 @@ public class RedAutonomousRight extends LinearOpMode
             telemetry.update();
 
 
-            
-            if (pos.equals("FOUR")) {//Furthest Square *Target C
-                if (autonomousStep == 0) {
-                    encoderDrive(0.75, 15, 15, 15, 15, 10);
-                    autonomousStep = 1;
+
+            if (autonomousStep == 0) {//Drive to the middle of the goals
+                robot.wobbleArm.setPower(-0.2);
+                if (analysis < lowerRingThreshold) {
+                    encoderDrive(0.75, -12, -12, -12, -12, 10);
+                } else {
+                    encoderDrive(0.75, -19, -19, -19, -19, 10);
                 }
-            } else if (pos.equals("ONE")) {//Middle Square *Target B
-                if (autonomousStep == 0) {
-                    encoderDrive(0.75, 12, 12, 12, 12, 10);
-                    autonomousStep = 1;
+                autonomousStep = 1;
+            }//Drive to the middle of the goals
+            
+            if (analysis > 150) {//Furthest Square *Target C
+                pos = "FOUR";
+                if (autonomousStep == 1) {
+                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
+
+
+
+                    robot.wobbleServo.setPosition(0);
+                    runtime.reset();
+                    while (runtime.seconds() < 1 ) {}
+                    while (runtime.seconds() > 1 && runtime.seconds() < 2) {
+                        robot.wobbleArm.setPower(0.2);
+                    }
+                        robot.wobbleArm.setPower(0);
+                    robot.wobbleLockServo.setPosition(1);
+
+                    runtime.reset();
+                    while (runtime.seconds() < 0.3 ) {}
+
+                    runtime.reset();
+                    while (runtime.seconds() > 0 && runtime.seconds() < 1) {
+                        robot.wobbleArm.setPower(-0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleServo.setPosition(1);
+
+                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
+
+                    autonomousStep = 2;
+                }
+            } else if (analysis < higherRingThreshold && analysis > lowerRingThreshold) {//Middle Square *Target B
+                pos = "ONE";
+                if (autonomousStep == 1) {
+                    encoderDrive(0.5, 6.6, 6.6, -6.6, -6.6, 10);
+
+                    robot.wobbleServo.setPosition(0);
+                    runtime.reset();
+                    while (runtime.seconds() < 1 ) {}
+                    while (runtime.seconds() > 1 && runtime.seconds() < 2) {
+                        robot.wobbleArm.setPower(0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleLockServo.setPosition(1);
+
+                    runtime.reset();
+                    while (runtime.seconds() < 0.3 ) {}
+
+
+                    runtime.reset();
+                    while (runtime.seconds() > 0 && runtime.seconds() < 1) {
+                        robot.wobbleArm.setPower(-0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleServo.setPosition(1);
+
+
+                    encoderDrive(0.5, -6.6, -6.6, 6.6, 6.6, 10);
+                    autonomousStep = 2;
                 }
             } else {//Closest Square *Target A
-                if (autonomousStep == 0) {
-                    encoderDrive(0.75, 9, 9, 9, 9, 10);
-                    autonomousStep = 1;
+                pos = "NONE";
+                if (autonomousStep == 1) {
+                    encoderDrive(0.5, -2.3, -2.3, 2.3, 2.3, 10);
+
+
+
+                    robot.wobbleServo.setPosition(0);
+                    runtime.reset();
+                    while (runtime.seconds() < 1 ) {}
+                    while (runtime.seconds() > 1 && runtime.seconds() < 2) {
+                        robot.wobbleArm.setPower(0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleLockServo.setPosition(1);
+
+                    runtime.reset();
+                    while (runtime.seconds() < 0.3 ) {}
+
+
+                    runtime.reset();
+                    while (runtime.seconds() > 0 && runtime.seconds() < 1) {
+                        robot.wobbleArm.setPower(-0.2);
+                    }
+                    robot.wobbleArm.setPower(0);
+                    robot.wobbleServo.setPosition(1);
+
+
+                    encoderDrive(0.5, 2.3, 2.3, -2.3, -2.3, 10);
+                    autonomousStep = 2;
                 }
             }
+
+            if (autonomousStep == 2 ) {//Drive behind the line, and shoot off 3 rings.
+                if (analysis >= lowerRingThreshold) {
+                    encoderDrive(0.75, 10, 10, 10, 10, 10);
+                }
+                double angleToFireFrom = calculateAngle(zAxisValue, 10);
+                runtime.reset();
+                robot.DiscLauncher.setPower(0.5);
+                while (runtime.seconds() < 3) {}
+
+
+                robot.launcherServo.setPosition(1);
+                runtime.reset();
+                while (runtime.seconds() < 1) {}
+                robot.launcherServo.setPosition(0.4);
+                while (runtime.seconds() < 0.3) {}
+
+
+                robot.launcherServo.setPosition(1);
+                runtime.reset();
+                while (runtime.seconds() < 1) {}
+                robot.launcherServo.setPosition(0.4);
+                while (runtime.seconds() < 0.3) {}
+
+
+                robot.launcherServo.setPosition(1);
+                runtime.reset();
+                while (runtime.seconds() < 1) {}
+                robot.launcherServo.setPosition(0.4);
+                while (runtime.seconds() < 0.3) {}
+
+
+                robot.DiscLauncher.setPower(0);
+
+                if (analysis < lowerRingThreshold) {
+                    robot.leftBackDrive.setPower(-0.5);
+                    robot.leftFrontDrive.setPower(0.5);
+                    robot.rightBackDrive.setPower(0.5);
+                    robot.rightFrontDrive.setPower(-0.5);
+
+                    runtime.reset();
+                    while (runtime.seconds() < 1.2) {}
+
+                    robot.leftBackDrive.setPower(0);
+                    robot.leftFrontDrive.setPower(0);
+                    robot.rightBackDrive.setPower(0);
+                    robot.rightFrontDrive.setPower(0);
+                }
+                autonomousStep = 3;
+            }
+
+            if (autonomousStep == 3) {//drive forward until the color sensor sees white.
+                robot.leftBackDrive.setPower(-0.5);
+                robot.leftFrontDrive.setPower(-0.5);
+                robot.rightBackDrive.setPower(-0.5);
+                robot.rightFrontDrive.setPower(-0.5);
+                runtime.reset();
+                while (robot.colorSensor.blue() < 300 && robot.colorSensor.green() < 600 && robot.colorSensor.red() < 500 && runtime.seconds() < 2) {
+
+                }
+
+
+
+                robot.leftBackDrive.setPower(0);
+                robot.leftFrontDrive.setPower(0);
+                robot.rightBackDrive.setPower(0);
+                robot.rightFrontDrive.setPower(0);
+
+
+                runtime.reset();
+                while (runtime.seconds() < 0.25) {
+                    robot.leftBackDrive.setPower(0.5);
+                    robot.leftFrontDrive.setPower(0.5);
+                    robot.rightBackDrive.setPower(0.5);
+                    robot.rightFrontDrive.setPower(0.5);
+                }
+                robot.leftBackDrive.setPower(0);
+                robot.leftFrontDrive.setPower(0);
+                robot.rightBackDrive.setPower(0);
+                robot.rightFrontDrive.setPower(0);
+                autonomousStep = 4;
+
+            }//drive forward until the color sensor sees white.
+
+
+            if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
+                float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
+//            if (Math.abs(centeredValue) < targetCloseThreshold) {
+//                //robot is aimed at the right spot, or at least close enough. Do nothing.
+//            } else
+                if (centeredValue > targetCloseThreshold) {
+                    //robot turret needs to turn right.
+                    horizontalServoSearchDirection = 0;
+                    currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
+                } else if (centeredValue < 0 - targetCloseThreshold) {
+                    //robot turret needs to turn left.
+                    horizontalServoSearchDirection = 1;
+                    currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
+                }
+
+                lastOrientation = robot.imu.getAngularOrientation().thirdAngle;//
+                telemetry.addData("Angle Rotation", lastOrientation);
+
+            } else if (targetVisible && activeTarget.equals("Red Alliance Target")) {
+                float triangleAngleX = centeredValue;//this angle is going to need to gotten from the vuforia stuff. Testing required to find out if its one of the ones provided, or if I need to do calculations for it.
+                float triangleSideD = (float)zAxisValue;//same with this side, except I know I don't need to do extra calculations.
+
+
+                float triangleAngleW = (float)(Math.PI - (triangleAngleZ + triangleAngleX));
+                float triangleSideE = (float)(Math.sqrt(Math.pow(triangleSideC, 2) + Math.pow(triangleSideD, 2)  - (2 * triangleSideC * triangleSideD * Math.cos(triangleAngleW))));
+                float triangleAngleV = (float)(Math.acos(-((Math.pow(triangleSideC, 2) - Math.pow(triangleSideE, 2) - Math.pow(triangleSideD, 2)) - (2 * triangleSideE * triangleSideD))));
+
+                float angleToTurn = (float)(triangleAngleV / Math.PI);
+
+                if (!Double.isNaN(angleToTurn)) {//make sure the value isn't imaginary.
+                    currentServoPos -= angleToTurn;
+                }
+                if (currentServoPos > 1) {
+                    currentServoPos = 1;
+                }
+                if (currentServoPos < 0) {
+                    currentServoPos = 0;
+                }
+                horizontalServoSearchDirection = 1;
+            } else if (!targetVisible) {//Robot cannot see any targets.
+                if (horizontalServoSearchDirection == 0) {
+                    currentServoPos += 0.0001;
+                }
+                if (horizontalServoSearchDirection == 1) {
+                    currentServoPos -= 0.0001;
+                }
+                if (currentServoPos <= 0) {
+                    currentServoPos = 0;
+                    horizontalServoSearchDirection = 0;
+                }
+                if (currentServoPos >= 1) {
+                    currentServoPos = 1;
+                    horizontalServoSearchDirection = 1;
+                }
+            }//scan surroundings until correct target is found
+
+
+            robot.horizontalTurret.setPosition(currentServoPos);
+
             /*
             * Autonomous Steps:
             * 1: Scan the rings to see which position the wobble goal should go
@@ -459,6 +728,88 @@ public class RedAutonomousRight extends LinearOpMode
 
 
 
+    public static double calculateAngle(double horizontalDistance, double initVelocity) {//Calculate the angle the cannon should be using sensors. Make sure calculations are in m/s
+        double verticalDistance = 0.90963725;
+        double pi = 3.141592653589793238462643383;
+
+        double a = 1;
+        double b = -((initVelocity * initVelocity) / (4.905 * horizontalDistance));
+        double c = -(((verticalDistance / horizontalDistance) + ((4.905 * horizontalDistance) / (initVelocity * initVelocity))) / ((-4.905 * horizontalDistance) / (initVelocity * initVelocity)));
+
+
+
+        double anglePlus = Math.atan((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a));
+        double angleMinus = Math.atan((-b - Math.sqrt((b * b) - (4 * a * c))) / (2 * a));
+
+        //Math.atan uses radians. Angle will be returned in radians.
+
+        boolean plusWorks = false;
+        boolean minusWorks = false;
+
+        if (anglePlus > 0 && anglePlus < (pi / 2)) {
+            plusWorks = true;
+        }
+
+        if (angleMinus > 0 && angleMinus < (pi / 2)) {
+            minusWorks = true;
+        }
+
+        if (plusWorks && minusWorks) {
+            return (Math.min(anglePlus, angleMinus));
+        } else if (plusWorks) {
+            return anglePlus;
+        } else {
+            return angleMinus;
+        }
+
+    }
+
+    public static double distillAngle(double horizontalDistance, double initVelocity, double radius, double previousAngle, int passes) {
+        while (passes != 0) {
+            double verticalDistance = 0.90963725;
+            double pi = 3.141592653589793238462643383;
+
+            double a = ((-4.905 * (horizontalDistance - (radius * Math.cos(previousAngle))) * (horizontalDistance - (radius * Math.cos(previousAngle)))) / (initVelocity * initVelocity));
+            double b = (horizontalDistance - (radius * Math.cos(previousAngle)));
+            double c = -(verticalDistance - (radius * Math.sin(previousAngle)) + ((4.905 * (horizontalDistance - (radius * Math.cos(previousAngle))) * (horizontalDistance - (radius * Math.cos(previousAngle)))) / (initVelocity * initVelocity)));
+
+            double anglePlus = Math.atan((-b + Math.sqrt((b * b) - (4 * a * c))) / (2 * a));
+            double angleMinus = Math.atan((-b - Math.sqrt((b * b) - (4 * a * c))) / (2 * a));
+
+
+
+            boolean plusWorks = false;
+            boolean minusWorks = false;
+
+            if (anglePlus > 0 && anglePlus < (pi / 2)) {
+                plusWorks = true;
+            }
+
+            if (angleMinus > 0 && angleMinus < (pi / 2)) {
+                minusWorks = true;
+            }
+            if (previousAngle == anglePlus || previousAngle == angleMinus) {
+                passes = 1;
+            } else {//Angle isn't yet refined enough
+                if (plusWorks && minusWorks) {
+                    previousAngle = (Math.min(anglePlus, angleMinus));
+                } else if (plusWorks) {
+                    previousAngle = anglePlus;
+                } else {
+                    previousAngle = angleMinus;
+                }
+            }
+            passes--;
+        }
+        return previousAngle;
+    }
+
+    public static double angleCalc(double horizontalDistance, double initVelocity, double radius, int passes) {
+        double firstAngle = calculateAngle(horizontalDistance, initVelocity);
+        return distillAngle(horizontalDistance, initVelocity, radius, firstAngle, passes);
+    }
+
+
 
 
 
@@ -487,10 +838,10 @@ public class RedAutonomousRight extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(181,98);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(160,98);
 
-        static final int REGION_WIDTH = 35;
-        static final int REGION_HEIGHT = 25;
+        static final int REGION_WIDTH = 60;
+        static final int REGION_HEIGHT = 40;
 
         final int FOUR_RING_THRESHOLD = 150;
         final int ONE_RING_THRESHOLD = 135;
@@ -570,5 +921,6 @@ public class RedAutonomousRight extends LinearOpMode
         {
             return avg1;
         }
+
     }
 }
