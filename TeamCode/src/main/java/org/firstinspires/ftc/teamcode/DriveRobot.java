@@ -339,7 +339,6 @@ public class DriveRobot extends OpMode {
     float triangleSideC = (float)Math.sqrt(Math.pow(triangleSideA, 2) + Math.pow(triangleSideB, 2));
 
     float triangleAngleZ = (float)Math.asin(triangleSideA / triangleSideC);
-    double launcherServoPosition = 0.4;
     double conveyorMotorPower = 0;
     double collectionMotorPower = 0;
     double wobbleLockServoPos = 0;
@@ -451,14 +450,12 @@ public class DriveRobot extends OpMode {
             while (runtime.seconds() < 0.2) {
 
             }
-            launcherServoPosition = 1;
-            robot.launcherServo.setPosition((launcherServoPosition));
+            robot.launcherServo.setPower(-0.8);
             runtime.reset();
             while (runtime.seconds() < 1) {
 
             }
-            launcherServoPosition = 0.4;
-            robot.launcherServo.setPosition((launcherServoPosition));
+            robot.launcherServo.setPower(0);
             robot.DiscLauncher.setPower(0);
         }
 
@@ -543,11 +540,11 @@ public class DriveRobot extends OpMode {
             if (centeredValue > targetCloseThreshold) {
                 //robot turret needs to turn right.
                 horizontalServoSearchDirection = 0;
-                currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
+                currentServoPos += (centeredValue * 0.0002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
             } else if (centeredValue < 0 - targetCloseThreshold) {
                 //robot turret needs to turn left.
                 horizontalServoSearchDirection = 1;
-                currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
+                currentServoPos += (centeredValue * 0.0002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
             }
 
             lastOrientation = robot.imu.getAngularOrientation().thirdAngle;//
@@ -567,26 +564,26 @@ public class DriveRobot extends OpMode {
             if (!Double.isNaN(angleToTurn)) {//make sure the value isn't imaginary.
                 currentServoPos -= angleToTurn;
             }
-            if (currentServoPos > 1) {
-                currentServoPos = 1;
+            if (currentServoPos > 0.7) {
+                currentServoPos = 0.7;
             }
-            if (currentServoPos < 0) {
-                currentServoPos = 0;
+            if (currentServoPos < 0.4) {
+                currentServoPos = 0.4;
             }
             horizontalServoSearchDirection = 1;
         } else if (!targetVisible) {//Robot cannot see any targets.
             if (horizontalServoSearchDirection == 0) {
-                currentServoPos += 0.0001;
+                currentServoPos += 0.001;
             }
             if (horizontalServoSearchDirection == 1) {
-                currentServoPos -= 0.0001;
+                currentServoPos -= 0.001;
             }
-            if (currentServoPos <= 0) {
-                currentServoPos = 0;
+            if (currentServoPos <= 0.4) {
+                currentServoPos = 0.4;
                 horizontalServoSearchDirection = 0;
             }
-            if (currentServoPos >= 1) {
-                currentServoPos = 1;
+            if (currentServoPos >= 0.7) {
+                currentServoPos = 0.7;
                 horizontalServoSearchDirection = 1;
             }
         }//scan surroundings until correct target is found
@@ -605,7 +602,7 @@ public class DriveRobot extends OpMode {
 
         robot.verticalTurret.setPosition(verticalTurretPos);
         robot.horizontalTurret.setPosition(currentServoPos);
-        robot.launcherServo.setPosition(launcherServoPosition);
+//        robot.launcherServo.setPosition(launcherServoPosition);
         robot.wobbleLockServo.setPosition(wobbleLockServoPos);
 
         telemetry.addData("\nMotors:\nLeft Front Power",leftFrontPower * driveSpeed);
@@ -619,7 +616,7 @@ public class DriveRobot extends OpMode {
         telemetry.addData("Collection Motor", collectionMotorPower);
         telemetry.addData("\nServos:\nHorizontal Servo Position", currentServoPos);
         telemetry.addData("Vertical Servo Position", verticalTurretPos);
-        telemetry.addData("Launcher Servo Position", launcherServoPosition);
+//        telemetry.addData("Launcher Servo Position", launcherServoPosition);
         telemetry.addData("Wobble Lock Servo Position", wobbleLockServoPos);
         telemetry.addData("\nColor Data\nRed", robot.colorSensor.red());
         telemetry.addData("Green", robot.colorSensor.green());

@@ -397,7 +397,7 @@ public class RedAutonomousRight extends LinearOpMode
             if (analysis > higherRingThreshold) {//Furthest Square *Target C
                 pos = "FOUR";
                 if (autonomousStep == 1) {
-                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
+                    encoderDrive(0.5, 9.9, 9.9, -9.9, -9.9, 10);
 
 
 
@@ -432,7 +432,7 @@ public class RedAutonomousRight extends LinearOpMode
 
 
 
-                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
+                    encoderDrive(0.5, 9.9, 9.9, -9.9, -9.9, 10);
 
                     autonomousStep = 2;
                 }
@@ -477,7 +477,7 @@ public class RedAutonomousRight extends LinearOpMode
             } else {//Closest Square *Target A
                 pos = "NONE";
                 if (autonomousStep == 1) {
-                    encoderDrive(0.5, -9.9, -9.9, 9.9, 9.9, 10);
+                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
 
 
 
@@ -511,7 +511,7 @@ public class RedAutonomousRight extends LinearOpMode
 
 
 
-                    encoderDrive(0.5, 9.9, 9.9, -9.9, -9.9, 10);
+                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
                     autonomousStep = 2;
                 }
             }
@@ -526,25 +526,11 @@ public class RedAutonomousRight extends LinearOpMode
                 while (runtime.seconds() < 3) {}
 
 
-                robot.launcherServo.setPosition(1);
-                runtime.reset();
-                while (runtime.seconds() < 1) {}
-                robot.launcherServo.setPosition(0.4);
-                while (runtime.seconds() < 0.3) {}
-
-
-                robot.launcherServo.setPosition(1);
-                runtime.reset();
-                while (runtime.seconds() < 1) {}
-                robot.launcherServo.setPosition(0.4);
-                while (runtime.seconds() < 0.3) {}
-
-
-                robot.launcherServo.setPosition(1);
-                runtime.reset();
-                while (runtime.seconds() < 1) {}
-                robot.launcherServo.setPosition(0.4);
-                while (runtime.seconds() < 0.3) {}
+//                robot.launcherServo.setPosition(1);
+//                runtime.reset();
+//                while (runtime.seconds() < 1) {}
+//                robot.launcherServo.setPosition(0.4);
+//                while (runtime.seconds() < 0.3) {}
 
 
                 robot.DiscLauncher.setPower(0);
