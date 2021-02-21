@@ -507,9 +507,11 @@ public class DriveRobot extends OpMode {
         if (gamepad1.y) {
             conveyorMotorPower = 1;
             collectionMotorPower = 1;
+            robot.launcherServo.setPower(-0.8);
         } else {
             conveyorMotorPower = 0;
             collectionMotorPower = 0;
+            robot.launcherServo.setPower(0);
         }
 
 
