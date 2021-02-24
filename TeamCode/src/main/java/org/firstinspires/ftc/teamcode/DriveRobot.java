@@ -440,22 +440,21 @@ public class DriveRobot extends OpMode {
 
         if (gamepad1.b && activeTarget.equals("Red Tower Goal Target")) {
             double angleToFireFrom = calculateAngle(zAxisValue, 10);
-            runtime.reset();
+
             robot.DiscLauncher.setPower(0.5);
-            while (runtime.seconds() < 3) {
-
-            }
 
             runtime.reset();
-            while (runtime.seconds() < 0.2) {
-                
-            }
-            robot.launcherServo.setPower(-0.4);
-            runtime.reset();
-            while (runtime.seconds() < 1) {
+            while (runtime.seconds() < 3) {}
 
-            }
-            robot.launcherServo.setPower(0);
+            runtime.reset();
+            while (runtime.seconds() < 0.2) {}
+
+            robot.launcherServo.setPosition(0.4);
+
+            runtime.reset();
+            while (runtime.seconds() < 1) {}
+
+            robot.launcherServo.setPosition(0);
             robot.DiscLauncher.setPower(0);
         }
 
@@ -507,11 +506,9 @@ public class DriveRobot extends OpMode {
         if (gamepad1.y) {
             conveyorMotorPower = 1;
             collectionMotorPower = 1;
-            robot.launcherServo.setPower(-0.8);
         } else {
             conveyorMotorPower = 0;
             collectionMotorPower = 0;
-            robot.launcherServo.setPower(0);
         }
 
 

@@ -79,7 +79,7 @@ public class HardwareConfig
     public Servo collectionLockServo = null; //Control Hub: Port 0
     public Servo horizontalTurret = null; //Control Hub: Port 5
     public Servo verticalTurret = null; //Control Hub: Port 3
-    public CRServo launcherServo = null; // Control Hub: Port 4
+    public Servo launcherServo = null; // Control Hub: Port 2
 
     public ColorSensor colorSensor = null;//Expansion Hub: I2C Bus 0
 
@@ -129,7 +129,7 @@ public class HardwareConfig
         wobbleArm = hwMap.get(DcMotor.class, "wobbleArm");
         horizontalTurret = hwMap.get(Servo.class, "horizontalTurret");
         verticalTurret = hwMap.get(Servo.class, "verticalTurret");
-        launcherServo = hwMap.get(CRServo.class, "launcherServo");
+        launcherServo = hwMap.get(Servo.class, "launcherServo");
         wobbleLockServo = hwMap.get(Servo.class, "wobbleLockServo");
         collectionLockServo = hwMap.get(Servo.class, "collectionLockServo");
         colorSensor = hwMap.get(ColorSensor.class, "colorSensor");
