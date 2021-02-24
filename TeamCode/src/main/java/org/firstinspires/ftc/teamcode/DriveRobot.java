@@ -448,9 +448,9 @@ public class DriveRobot extends OpMode {
 
             runtime.reset();
             while (runtime.seconds() < 0.2) {
-
+                
             }
-            robot.launcherServo.setPower(-0.8);
+            robot.launcherServo.setPower(-0.4);
             runtime.reset();
             while (runtime.seconds() < 1) {
 
