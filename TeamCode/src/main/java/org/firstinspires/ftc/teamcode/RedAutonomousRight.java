@@ -396,6 +396,7 @@ public class RedAutonomousRight extends LinearOpMode
             
             if (analysis > higherRingThreshold) {//Furthest Square *Target C
                 pos = "FOUR";
+                telemetry.addData("Target", "C");
                 if (autonomousStep == 1) {
                     encoderDrive(0.5, 9.9, 9.9, -9.9, -9.9, 10);
 
@@ -432,12 +433,13 @@ public class RedAutonomousRight extends LinearOpMode
 
 
 
-                    encoderDrive(0.5, 9.9, 9.9, -9.9, -9.9, 10);
+                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
 
                     autonomousStep = 2;
                 }
             } else if (analysis < higherRingThreshold && analysis > lowerRingThreshold) {//Middle Square *Target B
                 pos = "ONE";
+                telemetry.addData("Target", "B");
                 if (autonomousStep == 1) {
                     encoderDrive(0.5, 6.6, 6.6, -6.6, -6.6, 10);
 
@@ -476,8 +478,9 @@ public class RedAutonomousRight extends LinearOpMode
                 }
             } else {//Closest Square *Target A
                 pos = "NONE";
+                telemetry.addData("Target", "A");
                 if (autonomousStep == 1) {
-                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
+                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
 
 
 
@@ -511,7 +514,7 @@ public class RedAutonomousRight extends LinearOpMode
 
 
 
-                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
+                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
                     autonomousStep = 2;
                 }
             }

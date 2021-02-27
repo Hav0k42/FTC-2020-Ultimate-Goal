@@ -452,9 +452,13 @@ public class DriveRobot extends OpMode {
             robot.launcherServo.setPosition(0.4);
 
             runtime.reset();
-            while (runtime.seconds() < 1) {}
+            while (runtime.seconds() < 0.3) {}
 
             robot.launcherServo.setPosition(0);
+
+            runtime.reset();
+            while (runtime.seconds() < 0.6) {}
+
             robot.DiscLauncher.setPower(0);
         }
 
