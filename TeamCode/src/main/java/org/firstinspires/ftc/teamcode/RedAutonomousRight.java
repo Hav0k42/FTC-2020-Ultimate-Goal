@@ -60,7 +60,6 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-
 @Autonomous(name="Red Right", group ="Autonomous")
 public class RedAutonomousRight extends LinearOpMode
 {
@@ -77,7 +76,7 @@ public class RedAutonomousRight extends LinearOpMode
     static final double     TURN_SPEED              = 0.5;
 
     static final double lowerRingThreshold = 132;
-    static final double higherRingThreshold = 140;
+    static final double higherRingThreshold = 150;
 
     OpenCvCamera webCam;
     SkystoneDeterminationPipeline pipeline;
@@ -191,10 +190,9 @@ public class RedAutonomousRight extends LinearOpMode
         int autonomousStep = 0;
         int preAutoStep = 0;
         while (opModeIsActive() && preAutoStep != 2) {
-            robot.wobbleArm.setPower(-0.3);
             robot.wobbleLockServo.setPosition(0);
             if (preAutoStep == 0) {
-                turretServoPosition = 0.45;
+                turretServoPosition = 0.47;
                 preAutoStep = 1;
                 runtime.reset();
             }
@@ -389,7 +387,7 @@ public class RedAutonomousRight extends LinearOpMode
 
             if (autonomousStep == 0) {//Drive to the middle of the goals
                 robot.wobbleArm.setPower(-0.2);
-                encoderDrive(0.75, -19, -19, -19, -19, 10);
+                encoderDrive(0.75, -18, -18, -18, -18, 10);
 
                 autonomousStep = 1;
             }//Drive to the middle of the goals
@@ -398,7 +396,7 @@ public class RedAutonomousRight extends LinearOpMode
                 pos = "FOUR";
                 telemetry.addData("Target", "C");
                 if (autonomousStep == 1) {
-                    encoderDrive(0.5, 9.9, 9.9, -9.9, -9.9, 10);
+                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
 
 
 
@@ -407,7 +405,8 @@ public class RedAutonomousRight extends LinearOpMode
 
 
                     //scuttle to the side a bit
-                    encoderDrive(0.5, 0.5, -0.5, -0.5, 0.5, 10);
+                    encoderDrive(0.5, -1.5, 1.5, 1.5, -1.5, 10);
+
                     runtime.reset();
                     robot.wobbleArm.setPower(0.35);
                     while (runtime.seconds() < 0.7) {}
@@ -417,10 +416,10 @@ public class RedAutonomousRight extends LinearOpMode
                     while (runtime.seconds() < 0.2) {}
 
                     //scuttle back
-                    encoderDrive(0.5, -0.5, 0.5, 0.5, -0.5, 10);
+                    encoderDrive(0.5, 1.5, -1.5, -1.5, 1.5, 10);
                     robot.wobbleLockServo.setPosition(0);
                     runtime.reset();
-                    while (runtime.seconds() < 0.2) {}
+                    while (runtime.seconds() < 0.1) {}
                     robot.wobbleArm.setPower(-0.6);
                     runtime.reset();
                     while (runtime.seconds() < 1) {}
@@ -441,14 +440,15 @@ public class RedAutonomousRight extends LinearOpMode
                 pos = "ONE";
                 telemetry.addData("Target", "B");
                 if (autonomousStep == 1) {
-                    encoderDrive(0.5, 6.6, 6.6, -6.6, -6.6, 10);
+                    encoderDrive(0.5, 7.7, 7.7, -7.7, -7.7, 10);
 
 
 
 
 
                     //scuttle to the side a bit
-                    encoderDrive(0.5, 0.5, -0.5, -0.5, 0.5, 10);
+                    encoderDrive(0.5, -1.5, 1.5, 1.5, -1.5, 10);
+
                     runtime.reset();
                     robot.wobbleArm.setPower(0.35);
                     while (runtime.seconds() < 0.7) {}
@@ -458,10 +458,10 @@ public class RedAutonomousRight extends LinearOpMode
                     while (runtime.seconds() < 0.2) {}
 
                     //scuttle back
-                    encoderDrive(0.5, -0.5, 0.5, 0.5, -0.5, 10);
+                    encoderDrive(0.5, 1.5, -1.5, -1.5, 1.5, 10);
                     robot.wobbleLockServo.setPosition(0);
                     runtime.reset();
-                    while (runtime.seconds() < 0.2) {}
+                    while (runtime.seconds() < 0.1) {}
                     robot.wobbleArm.setPower(-0.6);
                     runtime.reset();
                     while (runtime.seconds() < 1) {}
@@ -473,7 +473,7 @@ public class RedAutonomousRight extends LinearOpMode
 
 
 
-                    encoderDrive(0.5, -6.6, -6.6, 6.6, 6.6, 10);
+                    encoderDrive(0.5, -7, -7, 7, 7, 10);
                     autonomousStep = 2;
                 }
             } else {//Closest Square *Target A
@@ -489,7 +489,8 @@ public class RedAutonomousRight extends LinearOpMode
 
 
                     //scuttle to the side a bit
-                    encoderDrive(0.5, 0.5, -0.5, -0.5, 0.5, 10);
+                    encoderDrive(0.5, -1.5, 1.5, 1.5, -1.5, 10);
+
                     runtime.reset();
                     robot.wobbleArm.setPower(0.35);
                     while (runtime.seconds() < 0.7) {}
@@ -499,10 +500,10 @@ public class RedAutonomousRight extends LinearOpMode
                     while (runtime.seconds() < 0.2) {}
 
                     //scuttle back
-                    encoderDrive(0.5, -0.5, 0.5, 0.5, -0.5, 10);
+                    encoderDrive(0.5, 1.5, -1.5, -1.5, 1.5, 10);
                     robot.wobbleLockServo.setPosition(0);
                     runtime.reset();
-                    while (runtime.seconds() < 0.2) {}
+                    while (runtime.seconds() < 0.1) {}
                     robot.wobbleArm.setPower(-0.6);
                     runtime.reset();
                     while (runtime.seconds() < 1) {}
@@ -514,44 +515,81 @@ public class RedAutonomousRight extends LinearOpMode
 
 
 
-                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
+                    encoderDrive(0.5, -2.7, -2.7, 2.7, 2.7, 10);
                     autonomousStep = 2;
                 }
             }
 
             if (autonomousStep == 2 ) {//Drive behind the line, and shoot off 3 rings.
 
-                encoderDrive(0.75, 10, 10, 10, 10, 10);
+                if (analysis < lowerRingThreshold) {
+                    encoderDrive(0.5, 3, -3, -3, 3, 10);
+                    encoderDrive(0.75, 7.5, 7.5, 7.5, 7.5, 10);
+                } else {
+                    encoderDrive(0.75, 7.5, 7.5, 7.5, 7.5, 10);
+                    encoderDrive(0.5, 3, -3, -3, 3, 10);
+                }
 
                 double angleToFireFrom = calculateAngle(zAxisValue, 10);
-                runtime.reset();
                 robot.DiscLauncher.setPower(0.5);
-                while (runtime.seconds() < 3) {}
+
+                runtime.reset();
+                while (runtime.seconds() < 3) {
+                    robot.horizontalTurret.setPosition(0.68);
+                }
 
 
-//                robot.launcherServo.setPosition(1);
-//                runtime.reset();
-//                while (runtime.seconds() < 1) {}
-//                robot.launcherServo.setPosition(0.4);
-//                while (runtime.seconds() < 0.3) {}
+
+
+
+
+                robot.launcherServo.setPosition(0.2);
+                runtime.reset();
+                while (runtime.seconds() < 0.5) {
+                    robot.horizontalTurret.setPosition(0.68);
+                }
+                robot.launcherServo.setPosition(0);
+                runtime.reset();
+                while (runtime.seconds() < 1) {
+                    robot.horizontalTurret.setPosition(0.68);
+                    robot.collectionMotor.setPower(1);
+                }
+                robot.collectionMotor.setPower(0);
+
+
+
+                robot.launcherServo.setPosition(0.2);
+                runtime.reset();
+                while (runtime.seconds() < 0.5) {
+                    robot.horizontalTurret.setPosition(0.68);
+                }
+                robot.launcherServo.setPosition(0);
+                runtime.reset();
+                while (runtime.seconds() < 1) {
+                    robot.horizontalTurret.setPosition(0.68);
+                    robot.collectionMotor.setPower(1);
+                }
+                robot.collectionMotor.setPower(0);
+
+
+
+                robot.launcherServo.setPosition(0.2);
+                runtime.reset();
+                while (runtime.seconds() < 0.5) {
+                    robot.horizontalTurret.setPosition(0.68);
+                }
+                robot.launcherServo.setPosition(0);
+                runtime.reset();
+                while (runtime.seconds() < 1) {
+                    robot.horizontalTurret.setPosition(0.68);
+                }
+                robot.collectionMotor.setPower(0);
+
+
 
 
                 robot.DiscLauncher.setPower(0);
 
-                if (analysis < lowerRingThreshold) {
-                    robot.leftBackDrive.setPower(-0.5);
-                    robot.leftFrontDrive.setPower(0.5);
-                    robot.rightBackDrive.setPower(0.5);
-                    robot.rightFrontDrive.setPower(-0.5);
-
-                    runtime.reset();
-                    while (runtime.seconds() < 1.2) {}
-
-                    robot.leftBackDrive.setPower(0);
-                    robot.leftFrontDrive.setPower(0);
-                    robot.rightBackDrive.setPower(0);
-                    robot.rightFrontDrive.setPower(0);
-                }
                 autonomousStep = 3;
             }
 
