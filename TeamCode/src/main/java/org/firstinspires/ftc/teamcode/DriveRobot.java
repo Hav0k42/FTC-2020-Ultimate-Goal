@@ -438,7 +438,7 @@ public class DriveRobot extends OpMode {
 
 
 
-        if (gamepad1.b && activeTarget.equals("Red Tower Goal Target")) {
+        if (gamepad2.a && activeTarget.equals("Red Tower Goal Target")) {
             double angleToFireFrom = calculateAngle(zAxisValue, 10);
 
             robot.DiscLauncher.setPower(0.5);
