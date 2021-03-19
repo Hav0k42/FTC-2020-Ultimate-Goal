@@ -85,7 +85,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 public class DriveRobot extends OpMode {
 
 
-
+    boolean scanningModeOn = false;
+    boolean robotTargets = false;
 
     //Camera variables
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -438,25 +439,25 @@ public class DriveRobot extends OpMode {
 
 
 
-        if (gamepad1.a && activeTarget.equals("Red Tower Goal Target")) {
-            double angleToFireFrom = calculateAngle(zAxisValue, 10);
-
-            robot.DiscLauncher.setPower(0.5);
-
-            runtime.reset();
-            while (runtime.seconds() < 3) {}
-
+        if (gamepad1.b && (activeTarget.equals("Red Tower Goal Target") || !robotTargets)) {
+//            double angleToFireFrom = calculateAngle(zAxisValue, 10);
+//
+//            robot.DiscLauncher.setPower(0.5);
+//
+//            runtime.reset();
+//            while (runtime.seconds() < 3) {}
+//
             robot.launcherServo.setPosition(0.2);
 
             runtime.reset();
             while (runtime.seconds() < 0.3) {}
 
             robot.launcherServo.setPosition(0);
-
-            runtime.reset();
-            while (runtime.seconds() < 0.6) {}
-
-            robot.DiscLauncher.setPower(0);
+//
+//            runtime.reset();
+//            while (runtime.seconds() < 0.6) {}
+//
+//            robot.DiscLauncher.setPower(0);
         }
 
         if (gamepad1.x && toggleWobbleFlag == 0) {
@@ -467,7 +468,7 @@ public class DriveRobot extends OpMode {
                     toggleWobbleTimerFlag = 1;
                 }
                 if (timer.seconds() > 0 && timer.seconds() < 0.7) {
-                    wobbleArmPower = 0.35;
+                    wobbleArmPower = 0.8;
                 } else {
                     wobbleArmPower = 0;
                 }
@@ -487,7 +488,7 @@ public class DriveRobot extends OpMode {
                     toggleWobbleTimerFlag = 1;
                 }
                 if (timer.seconds() > 0.5 && timer.seconds() < 1.5) {
-                    wobbleArmPower = -0.6;
+                    wobbleArmPower = -0.8;
                 } else {
                     wobbleArmPower = 0;
                 }
@@ -513,7 +514,7 @@ public class DriveRobot extends OpMode {
         }
 
 
-        if (true) {
+        if (scanningModeOn) {
             if (verticalTurretDirection == 0) {
                 verticalTurretPos += 0.05;
             }
@@ -532,7 +533,7 @@ public class DriveRobot extends OpMode {
 
 
 
-        if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
+        if (targetVisible && activeTarget.equals("Red Tower Goal Target") && scanningModeOn) {//Robot sees the target under the red tower goal.
             float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
 //            if (Math.abs(centeredValue) < targetCloseThreshold) {
 //                //robot is aimed at the right spot, or at least close enough. Do nothing.
@@ -550,7 +551,7 @@ public class DriveRobot extends OpMode {
             lastOrientation = robot.imu.getAngularOrientation().thirdAngle;//
             telemetry.addData("Angle Rotation", lastOrientation);
 
-        } else if (targetVisible && activeTarget.equals("Red Alliance Target")) {
+        } else if (targetVisible && activeTarget.equals("Red Alliance Target") && scanningModeOn) {
             float triangleAngleX = centeredValue;//this angle is going to need to gotten from the vuforia stuff. Testing required to find out if its one of the ones provided, or if I need to do calculations for it.
             float triangleSideD = (float)zAxisValue;//same with this side, except I know I don't need to do extra calculations.
 
@@ -571,7 +572,7 @@ public class DriveRobot extends OpMode {
                 currentServoPos = 0.4;
             }
             horizontalServoSearchDirection = 1;
-        } else if (!targetVisible) {//Robot cannot see any targets.
+        } else if (!targetVisible && scanningModeOn) {//Robot cannot see any targets.
             if (horizontalServoSearchDirection == 0) {
                 currentServoPos += 0.001;
             }
@@ -589,6 +590,10 @@ public class DriveRobot extends OpMode {
         }//scan surroundings until correct target is found
 
 
+
+        if (!scanningModeOn) {
+            currentServoPos = 0.67;
+        }
 
 
         robot.leftFrontDrive.setPower(leftFrontPower * driveSpeed);
