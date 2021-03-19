@@ -78,6 +78,11 @@ public class RedAutonomousRightThreePowerShot extends LinearOpMode
     static final double lowerRingThreshold = 130;
     static final double higherRingThreshold = 142;
 
+
+    static final double firstRingPos = 0.0;
+    static final double secondRingPos = 0.0;
+    static final double thirdRingPos = 0.0;
+
     OpenCvCamera webCam;
     SkystoneDeterminationPipeline pipeline;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -604,19 +609,19 @@ public class RedAutonomousRightThreePowerShot extends LinearOpMode
                 telemetry.addData("targetFound", targetVisible);
                 runtime.reset();
                 while (runtime.seconds() < 3) {
-                    robot.horizontalTurret.setPosition(currentServoPos - 0.04);
+                    robot.horizontalTurret.setPosition(currentServoPos - firstRingPos);
                 }
 
 
                 robot.launcherServo.setPosition(0.2);
                 runtime.reset();
                 while (runtime.seconds() < 0.5) {
-                    robot.horizontalTurret.setPosition(currentServoPos - 0.14);
+                    robot.horizontalTurret.setPosition(currentServoPos - firstRingPos);
                 }
                 robot.launcherServo.setPosition(0);
                 runtime.reset();
                 while (runtime.seconds() < 1) {
-                    robot.horizontalTurret.setPosition(currentServoPos - 0.14);
+                    robot.horizontalTurret.setPosition(currentServoPos - secondRingPos);
                     robot.collectionMotor.setPower(1);
                 }
                 robot.collectionMotor.setPower(0);
@@ -625,12 +630,12 @@ public class RedAutonomousRightThreePowerShot extends LinearOpMode
                 robot.launcherServo.setPosition(0.2);
                 runtime.reset();
                 while (runtime.seconds() < 0.5) {
-                    robot.horizontalTurret.setPosition(currentServoPos - 0.14);
+                    robot.horizontalTurret.setPosition(currentServoPos - secondRingPos);
                 }
                 robot.launcherServo.setPosition(0);
                 runtime.reset();
                 while (runtime.seconds() < 1) {
-                    robot.horizontalTurret.setPosition(currentServoPos - 0.14);
+                    robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
                     robot.collectionMotor.setPower(1);
                 }
                 robot.collectionMotor.setPower(0);
@@ -641,12 +646,12 @@ public class RedAutonomousRightThreePowerShot extends LinearOpMode
                 robot.launcherServo.setPosition(0.2);
                 runtime.reset();
                 while (runtime.seconds() < 0.5) {
-                    robot.horizontalTurret.setPosition(currentServoPos - 0.24);
+                    robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
                 }
                 robot.launcherServo.setPosition(0);
                 runtime.reset();
                 while (runtime.seconds() < 1) {
-                    robot.horizontalTurret.setPosition(currentServoPos - 0.24);
+                    robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
                 }
                 robot.collectionMotor.setPower(0);
 

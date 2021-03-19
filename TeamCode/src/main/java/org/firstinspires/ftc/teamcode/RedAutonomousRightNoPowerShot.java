@@ -60,8 +60,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-@Autonomous(name="Red Right Two Power Shot", group ="Autonomous")
-public class RedAutonomousRightTwoPowerShot extends LinearOpMode
+@Autonomous(name="Red Right No Power Shot", group ="Autonomous")
+public class RedAutonomousRightNoPowerShot extends LinearOpMode
 {
 
     HardwareConfig         robot   = new HardwareConfig();   // Use a Pushbot's hardware
@@ -71,7 +71,7 @@ public class RedAutonomousRightTwoPowerShot extends LinearOpMode
     static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
@@ -117,31 +117,31 @@ public class RedAutonomousRightTwoPowerShot extends LinearOpMode
     @Override
     public void runOpMode()
     {
-
+    
         String pos = "";
         int analysis = 0;
+        
+            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
+            pipeline = new SkystoneDeterminationPipeline();
+            webCam.setPipeline(pipeline);
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
-        pipeline = new SkystoneDeterminationPipeline();
-        webCam.setPipeline(pipeline);
+            // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
+            // out when the RC activity is in portrait. We do our actual image processing assuming
+            // landscape orientation, though.
 
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
+            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+                @Override
+                public void onOpened() {
+                    webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+                }
+            });
+            
 
-        webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
-            }
-        });
+        
 
-
-
-
-
-
+            
+            
         webcamName = hardwareMap.get(WebcamName.class, "cam");
 
         // WARNING:
@@ -160,8 +160,8 @@ public class RedAutonomousRightTwoPowerShot extends LinearOpMode
 
 
 
-
-
+        
+        
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
@@ -180,17 +180,17 @@ public class RedAutonomousRightTwoPowerShot extends LinearOpMode
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0",  "Starting at %7d :%7d",
-                robot.leftFrontDrive.getCurrentPosition(),
-                robot.leftBackDrive.getCurrentPosition(),
-                robot.rightFrontDrive.getCurrentPosition(),
-                robot.rightBackDrive.getCurrentPosition()
-        );
+                          robot.leftFrontDrive.getCurrentPosition(),
+                          robot.leftBackDrive.getCurrentPosition(),
+                          robot.rightFrontDrive.getCurrentPosition(),
+                          robot.rightBackDrive.getCurrentPosition()
+                );
         telemetry.update();
-
+        
 
         telemetry.addData("Status", "Ready to start");
         telemetry.update();
-
+        
         waitForStart();
         double turretServoPosition = 0;
         int autonomousStep = 0;
@@ -218,7 +218,7 @@ public class RedAutonomousRightTwoPowerShot extends LinearOpMode
             telemetry.update();
             robot.horizontalTurret.setPosition(turretServoPosition);
         }
-
+        
 
 
 
@@ -397,7 +397,7 @@ public class RedAutonomousRightTwoPowerShot extends LinearOpMode
 
                 autonomousStep = 1;
             }//Drive to the middle of the goals
-
+            
             if (analysis > higherRingThreshold) {//Furthest Square *Target C
                 pos = "FOUR";
                 telemetry.addData("Target", "C");
@@ -608,7 +608,7 @@ public class RedAutonomousRightTwoPowerShot extends LinearOpMode
                 telemetry.addData("targetFound", targetVisible);
                 telemetry.update();
                 telemetry.addData("targetFound", targetVisible);
-                runtime.reset();
+                    runtime.reset();
                 while (runtime.seconds() < 3) {
                     robot.horizontalTurret.setPosition(currentServoPos - firstRingPos);
                 }
@@ -654,7 +654,7 @@ public class RedAutonomousRightTwoPowerShot extends LinearOpMode
                 while (runtime.seconds() < 1) {
                     robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
                 }
-                robot.collectionMotor.setPower(0);
+                    robot.collectionMotor.setPower(0);
 
 
 
@@ -732,28 +732,28 @@ public class RedAutonomousRightTwoPowerShot extends LinearOpMode
             robot.horizontalTurret.setPosition(currentServoPos);
 
             /*
-             * Autonomous Steps:
-             * 1: Scan the rings to see which position the wobble goal should go
-             * 2: Deliver the wobble goal to the correct zone
-             *   a: no rings, deliver goal to target a
-             *       Drive forward to target a
-             *   b: one ring, deliver goal to target b
-             *       Drive forward to halfway between targets a and c, turn in place, and drive forwards to deliver the goal to the right.
-             *       Reset position by driving back the same amount, and turning in place backwards the same amount.
-             *   c: four rings, deliver goal to target c
-             *       Drive forward to target c
-             *
-             * 3: Drive back to the launch zone, and launch the rings into the top goal using the algorithm I've written to determine the correct angle.
-             * 4: Drive forward to park on the line.
-             *
-             * */
+            * Autonomous Steps:
+            * 1: Scan the rings to see which position the wobble goal should go
+            * 2: Deliver the wobble goal to the correct zone
+            *   a: no rings, deliver goal to target a
+            *       Drive forward to target a
+            *   b: one ring, deliver goal to target b
+            *       Drive forward to halfway between targets a and c, turn in place, and drive forwards to deliver the goal to the right.
+            *       Reset position by driving back the same amount, and turning in place backwards the same amount.
+            *   c: four rings, deliver goal to target c
+            *       Drive forward to target c
+            *
+            * 3: Drive back to the launch zone, and launch the rings into the top goal using the algorithm I've written to determine the correct angle.
+            * 4: Drive forward to park on the line.
+            *
+            * */
 
         }
+        
+        
 
-
-
-
-
+        
+        
     }
     public void encoderDrive(double speed,
                              double leftFrontInches, double leftBackInches, double rightFrontInches, double rightBackInches,

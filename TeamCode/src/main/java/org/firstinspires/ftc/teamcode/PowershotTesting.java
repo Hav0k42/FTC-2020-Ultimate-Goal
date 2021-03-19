@@ -60,8 +60,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-@Autonomous(name="Red Right", group ="Autonomous")
-public class RedAutonomousRight extends LinearOpMode
+@Autonomous(name="Powershot Testing", group ="Autonomous")
+public class PowershotTesting extends LinearOpMode
 {
 
     HardwareConfig         robot   = new HardwareConfig();   // Use a Pushbot's hardware
@@ -71,12 +71,24 @@ public class RedAutonomousRight extends LinearOpMode
     static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                      (WHEEL_DIAMETER_INCHES * 3.1415);
+            (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
     static final double lowerRingThreshold = 130;
     static final double higherRingThreshold = 142;
+
+
+    /*
+    * Goal: 0.0
+    * Powershot 1:
+    * Powershot 2:
+    * Powershot 3:
+    * */
+
+    static final double firstRingPos = 0.0;
+    static final double secondRingPos = 0.1;
+    static final double thirdRingPos = 0.2;
 
     OpenCvCamera webCam;
     SkystoneDeterminationPipeline pipeline;
@@ -111,31 +123,31 @@ public class RedAutonomousRight extends LinearOpMode
     @Override
     public void runOpMode()
     {
-    
+
         String pos = "";
         int analysis = 0;
-        
-            int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-            webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
-            pipeline = new SkystoneDeterminationPipeline();
-            webCam.setPipeline(pipeline);
 
-            // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-            // out when the RC activity is in portrait. We do our actual image processing assuming
-            // landscape orientation, though.
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webCam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "cam"), cameraMonitorViewId);
+        pipeline = new SkystoneDeterminationPipeline();
+        webCam.setPipeline(pipeline);
 
-            webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-                @Override
-                public void onOpened() {
-                    webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
-                }
-            });
-            
+        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
+        // out when the RC activity is in portrait. We do our actual image processing assuming
+        // landscape orientation, though.
 
-        
+        webCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webCam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+            }
+        });
 
-            
-            
+
+
+
+
+
         webcamName = hardwareMap.get(WebcamName.class, "cam");
 
         // WARNING:
@@ -154,8 +166,8 @@ public class RedAutonomousRight extends LinearOpMode
 
 
 
-        
-        
+
+
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
@@ -174,17 +186,17 @@ public class RedAutonomousRight extends LinearOpMode
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Path0",  "Starting at %7d :%7d",
-                          robot.leftFrontDrive.getCurrentPosition(),
-                          robot.leftBackDrive.getCurrentPosition(),
-                          robot.rightFrontDrive.getCurrentPosition(),
-                          robot.rightBackDrive.getCurrentPosition()
-                );
+                robot.leftFrontDrive.getCurrentPosition(),
+                robot.leftBackDrive.getCurrentPosition(),
+                robot.rightFrontDrive.getCurrentPosition(),
+                robot.rightBackDrive.getCurrentPosition()
+        );
         telemetry.update();
-        
+
 
         telemetry.addData("Status", "Ready to start");
         telemetry.update();
-        
+
         waitForStart();
         double turretServoPosition = 0;
         int autonomousStep = 0;
@@ -212,7 +224,7 @@ public class RedAutonomousRight extends LinearOpMode
             telemetry.update();
             robot.horizontalTurret.setPosition(turretServoPosition);
         }
-        
+
 
 
 
@@ -384,155 +396,6 @@ public class RedAutonomousRight extends LinearOpMode
             telemetry.update();
 
 
-
-            if (autonomousStep == 0) {//Drive to the middle of the goals
-                robot.wobbleArm.setPower(-0.2);
-                encoderDrive(0.75, -18, -18, -18, -18, 10);
-
-                autonomousStep = 1;
-            }//Drive to the middle of the goals
-            
-            if (analysis > higherRingThreshold) {//Furthest Square *Target C
-                pos = "FOUR";
-                telemetry.addData("Target", "C");
-                if (autonomousStep == 1) {
-                    encoderDrive(0.5, -3.3, -3.3, 3.3, 3.3, 10);
-
-
-
-
-
-
-
-                    //scuttle to the side a bit
-                    encoderDrive(0.5, -1.5, 1.5, 1.5, -1.5, 10);
-
-                    runtime.reset();
-                    robot.wobbleArm.setPower(0.8);
-                    while (runtime.seconds() < 0.7) {}
-                    robot.wobbleArm.setPower(0);
-                    robot.wobbleLockServo.setPosition(1);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.2) {}
-
-                    //scuttle back
-                    encoderDrive(0.5, 1.5, -1.5, -1.5, 1.5, 10);
-                    robot.wobbleLockServo.setPosition(0);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.1) {}
-                    robot.wobbleArm.setPower(-0.8);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.8) {}
-
-                    robot.wobbleArm.setPower(0);
-
-
-
-
-
-
-
-
-                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
-
-                    autonomousStep = 2;
-                }
-            } else if (analysis < higherRingThreshold && analysis > lowerRingThreshold) {//Middle Square *Target B
-                pos = "ONE";
-                telemetry.addData("Target", "B");
-                if (autonomousStep == 1) {
-                    encoderDrive(0.5, 7.7, 7.7, -7.7, -7.7, 10);
-
-
-
-
-
-                    //scuttle to the side a bit
-                    encoderDrive(0.5, -1.5, 1.5, 1.5, -1.5, 10);
-
-                    runtime.reset();
-                    robot.wobbleArm.setPower(0.8);
-                    while (runtime.seconds() < 0.7) {}
-                    robot.wobbleArm.setPower(0);
-                    robot.wobbleLockServo.setPosition(1);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.2) {}
-
-                    //scuttle back
-                    encoderDrive(0.5, 1.5, -1.5, -1.5, 1.5, 10);
-                    robot.wobbleLockServo.setPosition(0);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.1) {}
-                    robot.wobbleArm.setPower(-0.8);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.8) {}
-
-                    robot.wobbleArm.setPower(0);
-
-
-
-
-
-
-
-                    encoderDrive(0.5, -7, -7, 7, 7, 10);
-                    autonomousStep = 2;
-                }
-            } else {//Closest Square *Target A
-                pos = "NONE";
-                telemetry.addData("Target", "A");
-                if (autonomousStep == 1) {
-                    encoderDrive(0.5, 3.3, 3.3, -3.3, -3.3, 10);
-
-
-
-
-
-
-
-                    //scuttle to the side a bit
-                    encoderDrive(0.5, -2.5, 2.5, 2.5, -2.5, 10);
-
-                    runtime.reset();
-                    robot.wobbleArm.setPower(0.8);
-                    while (runtime.seconds() < 0.7) {}
-                    robot.wobbleArm.setPower(0);
-                    robot.wobbleLockServo.setPosition(1);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.2) {}
-
-                    //scuttle back
-                    encoderDrive(0.5, 2.5, -2.5, -2.5, 2.5, 10);
-                    robot.wobbleLockServo.setPosition(0);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.1) {}
-                    robot.wobbleArm.setPower(-0.8);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.8) {}
-
-                    robot.wobbleArm.setPower(0);
-
-
-
-
-
-
-
-                    encoderDrive(0.5, -2.7, -2.7, 2.7, 2.7, 10);
-                    autonomousStep = 2;
-                }
-            }
-
-            if (autonomousStep == 2 ) {//Drive behind the line, and shoot off 3 rings.
-
-                if (analysis < lowerRingThreshold) {
-                    encoderDrive(0.5, 3, -3, -3, 3, 10);
-                    encoderDrive(0.75, 7.5, 7.5, 7.5, 7.5, 10);
-                } else {
-                    encoderDrive(0.75, 7.5, 7.5, 7.5, 7.5, 10);
-                    encoderDrive(0.5, 3, -3, -3, 3, 10);
-                }
-
                 double angleToFireFrom = calculateAngle(zAxisValue, 10);
                 robot.DiscLauncher.setPower(0.5);
 
@@ -593,161 +456,79 @@ public class RedAutonomousRight extends LinearOpMode
                             horizontalServoSearchDirection = 1;
                         }
                     }//scan surroundings until correct target is found
-                }
+                }//scan for the target
 
                 if (!targetVisible) {
                     currentServoPos = 0.68;
-
                 }
+
                 telemetry.addData("targetFound", targetVisible);
                 telemetry.update();
                 telemetry.addData("targetFound", targetVisible);
-                    runtime.reset();
-                    while (runtime.seconds() < 3) {
-                        robot.horizontalTurret.setPosition(currentServoPos);
-                    }
+                runtime.reset();
+                while (runtime.seconds() < 3) {
+                    robot.horizontalTurret.setPosition(currentServoPos - firstRingPos);
+                }
 
 
-                    robot.launcherServo.setPosition(0.2);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.5) {
-                        robot.horizontalTurret.setPosition(currentServoPos);
-                    }
-                    robot.launcherServo.setPosition(0);
-                    runtime.reset();
-                    while (runtime.seconds() < 1) {
-                        robot.horizontalTurret.setPosition(currentServoPos);
-                        robot.collectionMotor.setPower(1);
-                    }
-                    robot.collectionMotor.setPower(0);
+                robot.launcherServo.setPosition(0.2);
+                runtime.reset();
+                while (runtime.seconds() < 0.5) {
+                    robot.horizontalTurret.setPosition(currentServoPos - firstRingPos);
+                }
+                robot.launcherServo.setPosition(0);
+                runtime.reset();
+                while (runtime.seconds() < 1) {
+                    robot.horizontalTurret.setPosition(currentServoPos - secondRingPos);
+                    robot.collectionMotor.setPower(1);
+                }
+                robot.collectionMotor.setPower(0);
 
 
-                    robot.launcherServo.setPosition(0.2);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.5) {
-                        robot.horizontalTurret.setPosition(currentServoPos);
-                    }
-                    robot.launcherServo.setPosition(0);
-                    runtime.reset();
-                    while (runtime.seconds() < 1) {
-                        robot.horizontalTurret.setPosition(currentServoPos);
-                        robot.collectionMotor.setPower(1);
-                    }
-                    robot.collectionMotor.setPower(0);
+                robot.launcherServo.setPosition(0.2);
+                runtime.reset();
+                while (runtime.seconds() < 0.5) {
+                    robot.horizontalTurret.setPosition(currentServoPos - secondRingPos);
+                }
+                robot.launcherServo.setPosition(0);
+                runtime.reset();
+                while (runtime.seconds() < 1) {
+                    robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
+                    robot.collectionMotor.setPower(1);
+                }
+                robot.collectionMotor.setPower(0);
 
-                    robot.DiscLauncher.setPower(0.45);
+                robot.DiscLauncher.setPower(0.45);
 
 
-                    robot.launcherServo.setPosition(0.2);
-                    runtime.reset();
-                    while (runtime.seconds() < 0.5) {
-                        robot.horizontalTurret.setPosition(currentServoPos);
-                    }
-                    robot.launcherServo.setPosition(0);
-                    runtime.reset();
-                    while (runtime.seconds() < 1) {
-                        robot.horizontalTurret.setPosition(currentServoPos);
-                    }
-                    robot.collectionMotor.setPower(0);
+                robot.launcherServo.setPosition(0.2);
+                runtime.reset();
+                while (runtime.seconds() < 0.5) {
+                    robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
+                }
+                robot.launcherServo.setPosition(0);
+                runtime.reset();
+                while (runtime.seconds() < 1) {
+                    robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
+                }
+                robot.collectionMotor.setPower(0);
 
 
 
 
                 robot.DiscLauncher.setPower(0);
 
-                autonomousStep = 3;
-            }
 
-            if (autonomousStep == 3) {//drive forward until the color sensor sees white.
-                encoderDrive(0.7, -3, -3, -3, -3, 2);
-
-                autonomousStep = 4;
-
-            }//drive forward until the color sensor sees white.
-
-
-            if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
-                float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
-//            if (Math.abs(centeredValue) < targetCloseThreshold) {
-//                //robot is aimed at the right spot, or at least close enough. Do nothing.
-//            } else
-                if (centeredValue > targetCloseThreshold) {
-                    //robot turret needs to turn right.
-                    horizontalServoSearchDirection = 0;
-                    currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
-                } else if (centeredValue < 0 - targetCloseThreshold) {
-                    //robot turret needs to turn left.
-                    horizontalServoSearchDirection = 1;
-                    currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
-                }
-
-                lastOrientation = robot.imu.getAngularOrientation().thirdAngle;//
-                telemetry.addData("Angle Rotation", lastOrientation);
-
-            } else if (targetVisible && activeTarget.equals("Red Alliance Target")) {
-                float triangleAngleX = centeredValue;//this angle is going to need to gotten from the vuforia stuff. Testing required to find out if its one of the ones provided, or if I need to do calculations for it.
-                float triangleSideD = (float)zAxisValue;//same with this side, except I know I don't need to do extra calculations.
-
-
-                float triangleAngleW = (float)(Math.PI - (triangleAngleZ + triangleAngleX));
-                float triangleSideE = (float)(Math.sqrt(Math.pow(triangleSideC, 2) + Math.pow(triangleSideD, 2)  - (2 * triangleSideC * triangleSideD * Math.cos(triangleAngleW))));
-                float triangleAngleV = (float)(Math.acos(-((Math.pow(triangleSideC, 2) - Math.pow(triangleSideE, 2) - Math.pow(triangleSideD, 2)) - (2 * triangleSideE * triangleSideD))));
-
-                float angleToTurn = (float)(triangleAngleV / Math.PI);
-
-                if (!Double.isNaN(angleToTurn)) {//make sure the value isn't imaginary.
-                    currentServoPos -= angleToTurn;
-                }
-                if (currentServoPos > 1) {
-                    currentServoPos = 1;
-                }
-                if (currentServoPos < 0) {
-                    currentServoPos = 0;
-                }
-                horizontalServoSearchDirection = 1;
-            } else if (!targetVisible) {//Robot cannot see any targets.
-                if (horizontalServoSearchDirection == 0) {
-                    currentServoPos += 0.0001;
-                }
-                if (horizontalServoSearchDirection == 1) {
-                    currentServoPos -= 0.0001;
-                }
-                if (currentServoPos <= 0) {
-                    currentServoPos = 0;
-                    horizontalServoSearchDirection = 0;
-                }
-                if (currentServoPos >= 1) {
-                    currentServoPos = 1;
-                    horizontalServoSearchDirection = 1;
-                }
-            }//scan surroundings until correct target is found
 
 
             robot.horizontalTurret.setPosition(currentServoPos);
 
-            /*
-            * Autonomous Steps:
-            * 1: Scan the rings to see which position the wobble goal should go
-            * 2: Deliver the wobble goal to the correct zone
-            *   a: no rings, deliver goal to target a
-            *       Drive forward to target a
-            *   b: one ring, deliver goal to target b
-            *       Drive forward to halfway between targets a and c, turn in place, and drive forwards to deliver the goal to the right.
-            *       Reset position by driving back the same amount, and turning in place backwards the same amount.
-            *   c: four rings, deliver goal to target c
-            *       Drive forward to target c
-            *
-            * 3: Drive back to the launch zone, and launch the rings into the top goal using the algorithm I've written to determine the correct angle.
-            * 4: Drive forward to park on the line.
-            *
-            * */
-
         }
-        
-        
 
-        
-        
+
+
+
+
     }
     public void encoderDrive(double speed,
                              double leftFrontInches, double leftBackInches, double rightFrontInches, double rightBackInches,
@@ -901,12 +682,6 @@ public class RedAutonomousRight extends LinearOpMode
         double firstAngle = calculateAngle(horizontalDistance, initVelocity);
         return distillAngle(horizontalDistance, initVelocity, radius, firstAngle, passes);
     }
-
-
-
-
-
-
 
 
     public static class SkystoneDeterminationPipeline extends OpenCvPipeline
