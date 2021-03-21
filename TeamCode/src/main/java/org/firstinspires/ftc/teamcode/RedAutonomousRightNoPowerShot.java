@@ -84,6 +84,9 @@ public class RedAutonomousRightNoPowerShot extends LinearOpMode
     static final double secondRingPos = 0.0;
     static final double thirdRingPos = 0.0;
 
+
+    static final double initialRingPos = 0.68;
+
     OpenCvCamera webCam;
     SkystoneDeterminationPipeline pipeline;
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
@@ -443,7 +446,7 @@ public class RedAutonomousRightNoPowerShot extends LinearOpMode
 
                     autonomousStep = 2;
                 }
-            } else if (analysis < higherRingThreshold && analysis > lowerRingThreshold) {//Middle Square *Target B
+            } else if (analysis <= higherRingThreshold && analysis > lowerRingThreshold) {//Middle Square *Target B
                 pos = "ONE";
                 telemetry.addData("Target", "B");
                 if (autonomousStep == 1) {
@@ -531,11 +534,10 @@ public class RedAutonomousRightNoPowerShot extends LinearOpMode
 
             if (autonomousStep == 2 ) {//Drive behind the line, and shoot off 3 rings.
 
-                if (analysis < lowerRingThreshold) {
+                if (analysis <= lowerRingThreshold) {//square A
                     encoderDrive(0.5, 3, -3, -3, 3, 10);
-                    encoderDrive(0.75, 7.5, 7.5, 7.5, 7.5, 10);
                 } else {
-                    encoderDrive(0.75, 7.5, 7.5, 7.5, 7.5, 10);
+                    encoderDrive(0.75, 4.5, 4.5, 4.5, 4.5, 10);
                     encoderDrive(0.5, 3, -3, -3, 3, 10);
                 }
 
@@ -543,7 +545,45 @@ public class RedAutonomousRightNoPowerShot extends LinearOpMode
                 robot.DiscLauncher.setPower(0.5);
 
                 runtime.reset();
+                currentServoPos = 0.68;
                 while (runtime.seconds() < 3) {
+                    targetVisible = false;
+                    for (VuforiaTrackable trackable : allTrackables) {
+                        if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
+                            telemetry.addData("Visible Target", trackable.getName());
+                            targetVisible = true;
+                            activeTarget = trackable.getName();
+
+                            // getUpdatedRobotLocation() will return null if no new information is available since
+                            // the last time that call was made, or if the trackable is not currently visible.
+                            OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
+                            if (robotLocationTransform != null) {
+                                lastLocation = robotLocationTransform;
+                            }
+                            break;
+                        }
+                    }
+
+                    // Provide feedback as to where the robot is located (if we know).
+                    if (targetVisible) {
+                        // express position (translation) of robot in inches.
+                        VectorF translation = lastLocation.getTranslation();
+                        telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+                                translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);//Z-axis: vertical, Y-axis: Perpendicular Distance, X-axis: Parallel Distance
+
+                        // express the rotation of the robot in degrees.
+                        Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+                        telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+                        centeredValue = rotation.secondAngle;
+                        centeredValue += 180f;
+                        if (centeredValue > 180) {
+                            centeredValue -= 360;
+                        }
+                    }
+                    else {
+                        telemetry.addData("Visible Target", "none");
+                    }
+                    telemetry.update();
                     if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
                         float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
 //            if (Math.abs(centeredValue) < targetCloseThreshold) {
@@ -552,11 +592,11 @@ public class RedAutonomousRightNoPowerShot extends LinearOpMode
                         if (centeredValue > targetCloseThreshold) {
                             //robot turret needs to turn right.
                             horizontalServoSearchDirection = 0;
-                            currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
+                            currentServoPos += (centeredValue * 0.00001); //The value the turret rotates by is proportional to the distance the picture is from being centered.
                         } else if (centeredValue < 0 - targetCloseThreshold) {
                             //robot turret needs to turn left.
                             horizontalServoSearchDirection = 1;
-                            currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
+                            currentServoPos += (centeredValue * 0.00001); //The value the turret rotates by is proportional to the distance the picture is from being centered.
                         }
 
                         lastOrientation = robot.imu.getAngularOrientation().thirdAngle;//
@@ -576,33 +616,61 @@ public class RedAutonomousRightNoPowerShot extends LinearOpMode
                         if (!Double.isNaN(angleToTurn)) {//make sure the value isn't imaginary.
                             currentServoPos -= angleToTurn;
                         }
-                        if (currentServoPos > 1) {
-                            currentServoPos = 1;
+                        if (currentServoPos > 0.7) {
+                            currentServoPos = 0.7;
                         }
-                        if (currentServoPos < 0) {
-                            currentServoPos = 0;
+                        if (currentServoPos < 0.4) {
+                            currentServoPos = 0.4;
                         }
                         horizontalServoSearchDirection = 1;
                     } else if (!targetVisible) {//Robot cannot see any targets.
                         if (horizontalServoSearchDirection == 0) {
-                            currentServoPos += 0.0001;
+                            currentServoPos += 0.00005;
                         }
                         if (horizontalServoSearchDirection == 1) {
-                            currentServoPos -= 0.0001;
+                            currentServoPos -= 0.00005;
                         }
-                        if (currentServoPos <= 0) {
-                            currentServoPos = 0;
+                        if (currentServoPos <= 0.4) {
+                            currentServoPos = 0.4;
                             horizontalServoSearchDirection = 0;
                         }
-                        if (currentServoPos >= 1) {
-                            currentServoPos = 1;
+                        if (currentServoPos >= 0.7) {
+                            currentServoPos = 0.7;
                             horizontalServoSearchDirection = 1;
                         }
                     }//scan surroundings until correct target is found
+
+                    robot.horizontalTurret.setPosition(currentServoPos);
+                }//scan for the target
+
+                if (analysis <= lowerRingThreshold) {//Square A
+                    runtime.reset();
+                    while (runtime.seconds() < 2) {
+                        robot.leftFrontDrive.setPower(0.4);
+                        robot.leftBackDrive.setPower(0.4);
+                        robot.rightFrontDrive.setPower(0.4);
+                        robot.rightBackDrive.setPower(0.4);
+                    }
+                    robot.leftFrontDrive.setPower(0);
+                    robot.leftBackDrive.setPower(0);
+                    robot.rightFrontDrive.setPower(0);
+                    robot.rightBackDrive.setPower(0);
+                } else {
+                    runtime.reset();
+                    while (runtime.seconds() < 0.7) {
+                        robot.leftFrontDrive.setPower(0.4);
+                        robot.leftBackDrive.setPower(0.4);
+                        robot.rightFrontDrive.setPower(0.4);
+                        robot.rightBackDrive.setPower(0.4);
+                    }
+                    robot.leftFrontDrive.setPower(0);
+                    robot.leftBackDrive.setPower(0);
+                    robot.rightFrontDrive.setPower(0);
+                    robot.rightBackDrive.setPower(0);
                 }
 
                 if (!targetVisible) {
-                    currentServoPos = 0.68;
+                    currentServoPos = initialRingPos;
 
                 }
                 telemetry.addData("targetFound", targetVisible);
@@ -621,7 +689,7 @@ public class RedAutonomousRightNoPowerShot extends LinearOpMode
                 }
                 robot.launcherServo.setPosition(0);
                 runtime.reset();
-                while (runtime.seconds() < 1) {
+                while (runtime.seconds() < 0.4) {
                     robot.horizontalTurret.setPosition(currentServoPos - secondRingPos);
                     robot.collectionMotor.setPower(1);
                 }
@@ -635,7 +703,7 @@ public class RedAutonomousRightNoPowerShot extends LinearOpMode
                 }
                 robot.launcherServo.setPosition(0);
                 runtime.reset();
-                while (runtime.seconds() < 1) {
+                while (runtime.seconds() < 0.4) {
                     robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
                     robot.collectionMotor.setPower(1);
                 }
@@ -654,7 +722,22 @@ public class RedAutonomousRightNoPowerShot extends LinearOpMode
                 while (runtime.seconds() < 1) {
                     robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
                 }
-                    robot.collectionMotor.setPower(0);
+                robot.collectionMotor.setPower(0);
+
+                robot.DiscLauncher.setPower(0.45);
+
+
+                robot.launcherServo.setPosition(0.2);
+                runtime.reset();
+                while (runtime.seconds() < 0.5) {
+                    robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
+                }
+                robot.launcherServo.setPosition(0);
+                runtime.reset();
+                while (runtime.seconds() < 1) {
+                    robot.horizontalTurret.setPosition(currentServoPos - thirdRingPos);
+                }
+                robot.collectionMotor.setPower(0);
 
 
 

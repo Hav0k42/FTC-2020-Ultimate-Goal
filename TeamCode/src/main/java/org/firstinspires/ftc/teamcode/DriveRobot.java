@@ -85,7 +85,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 public class DriveRobot extends OpMode {
 
 
-    boolean scanningModeOn = false;
+    boolean scanningModeOn = true;
     boolean robotTargets = false;
 
     //Camera variables
@@ -514,22 +514,7 @@ public class DriveRobot extends OpMode {
         }
 
 
-        if (scanningModeOn) {
-            if (verticalTurretDirection == 0) {
-                verticalTurretPos += 0.05;
-            }
-            if (verticalTurretDirection == 1) {
-                verticalTurretPos -= 0.05;
-            }
-            if (verticalTurretPos <= 0) {
-                verticalTurretPos = 0;
-                verticalTurretDirection = 0;
-            }
-            if (verticalTurretPos >= 1) {
-                verticalTurretPos = 1;
-                verticalTurretDirection = 1;
-            }
-        }
+
 
 
 

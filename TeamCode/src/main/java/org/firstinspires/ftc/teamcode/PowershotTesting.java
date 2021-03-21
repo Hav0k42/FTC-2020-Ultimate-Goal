@@ -82,13 +82,15 @@ public class PowershotTesting extends LinearOpMode
     /*
     * Goal: 0.0
     * Powershot 1:
-    * Powershot 2:
+    * Powershot 2: 0.1
     * Powershot 3:
     * */
 
-    static final double firstRingPos = 0.0;
+    static final double firstRingPos = 0.1;
     static final double secondRingPos = 0.1;
-    static final double thirdRingPos = 0.2;
+    static final double thirdRingPos = 0.1;
+
+    static final double initialRingPos = 0.68;
 
     OpenCvCamera webCam;
     SkystoneDeterminationPipeline pipeline;
@@ -400,6 +402,7 @@ public class PowershotTesting extends LinearOpMode
                 robot.DiscLauncher.setPower(0.5);
 
                 runtime.reset();
+                currentServoPos = 0.68;
                 while (runtime.seconds() < 3) {
                     if (targetVisible && activeTarget.equals("Red Tower Goal Target")) {//Robot sees the target under the red tower goal.
                         float targetCloseThreshold = 4.0f; //If the robot is aimed within this value, it is acceptable and will stop changing where it aims. This is so it doesn't swivel and look weird
@@ -409,11 +412,11 @@ public class PowershotTesting extends LinearOpMode
                         if (centeredValue > targetCloseThreshold) {
                             //robot turret needs to turn right.
                             horizontalServoSearchDirection = 0;
-                            currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
+                            currentServoPos += (centeredValue * 0.0002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
                         } else if (centeredValue < 0 - targetCloseThreshold) {
                             //robot turret needs to turn left.
                             horizontalServoSearchDirection = 1;
-                            currentServoPos += (centeredValue * 0.00002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
+                            currentServoPos += (centeredValue * 0.0002); //The value the turret rotates by is proportional to the distance the picture is from being centered.
                         }
 
                         lastOrientation = robot.imu.getAngularOrientation().thirdAngle;//
@@ -433,11 +436,11 @@ public class PowershotTesting extends LinearOpMode
                         if (!Double.isNaN(angleToTurn)) {//make sure the value isn't imaginary.
                             currentServoPos -= angleToTurn;
                         }
-                        if (currentServoPos > 1) {
-                            currentServoPos = 1;
+                        if (currentServoPos > 0.7) {
+                            currentServoPos = 0.7;
                         }
-                        if (currentServoPos < 0) {
-                            currentServoPos = 0;
+                        if (currentServoPos < 0.4) {
+                            currentServoPos = 0.4;
                         }
                         horizontalServoSearchDirection = 1;
                     } else if (!targetVisible) {//Robot cannot see any targets.
@@ -447,19 +450,21 @@ public class PowershotTesting extends LinearOpMode
                         if (horizontalServoSearchDirection == 1) {
                             currentServoPos -= 0.0001;
                         }
-                        if (currentServoPos <= 0) {
-                            currentServoPos = 0;
+                        if (currentServoPos <= 0.4) {
+                            currentServoPos = 0.4;
                             horizontalServoSearchDirection = 0;
                         }
-                        if (currentServoPos >= 1) {
-                            currentServoPos = 1;
+                        if (currentServoPos >= 0.7) {
+                            currentServoPos = 0.7;
                             horizontalServoSearchDirection = 1;
                         }
                     }//scan surroundings until correct target is found
+
+                    robot.horizontalTurret.setPosition(currentServoPos);
                 }//scan for the target
 
                 if (!targetVisible) {
-                    currentServoPos = 0.68;
+                    currentServoPos = initialRingPos;
                 }
 
                 telemetry.addData("targetFound", targetVisible);
